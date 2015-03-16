@@ -1,7 +1,7 @@
 #ifndef LUASCRIPT_H
 #define LUASCRIPT_H
 
-#include <QString>
+/*#include <QString>
 #include <QVector>
 #include <widget.h>
 
@@ -23,6 +23,6 @@ public:
     static int LUA_sendChatMessage(lua_State *L);
     static int LUA_main();
 
-};
+};*/
 
 #endif // LUASCRIPT_H

@@ -270,7 +270,7 @@
    <string>[LoEWCT] Help and Settings</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resources.qrc">
+   <iconset>
     <normaloff>:/btnIcons/icons/wrench_orange.png</normaloff>:/btnIcons/icons/wrench_orange.png</iconset>
   </property>
   <property name="toolTip">
@@ -281,7 +281,7 @@
   </property>
   <widget class="QWidget" name="main">
    <attribute name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/btnIcons/icons/application_edit.png</normaloff>:/btnIcons/icons/application_edit.png</iconset>
    </attribute>
    <attribute name="title">
@@ -549,7 +549,7 @@
    <attribute name="title">
     <string>LoE Movie Maker</string>
    </attribute>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -584,7 +584,7 @@
   </widget>
   <widget class="QWidget" name="tab_2">
    <attribute name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/btnIcons/icons/server_edit.png</normaloff>:/btnIcons/icons/server_edit.png</iconset>
    </attribute>
    <attribute name="title">
@@ -933,7 +933,7 @@
   </widget>
   <widget class="QWidget" name="help">
    <attribute name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/btnIcons/icons/help.png</normaloff>:/btnIcons/icons/help.png</iconset>
    </attribute>
    <attribute name="title">
@@ -1033,7 +1033,7 @@ p, li { white-space: pre-wrap; }
   </widget>
   <widget class="QWidget" name="tab">
    <attribute name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/btnIcons/icons/group_go.png</normaloff>:/btnIcons/icons/group_go.png</iconset>
    </attribute>
    <attribute name="title">
@@ -1056,8 +1056,6 @@ p, li { white-space: pre-wrap; }
    </widget>
   </widget>
  </widget>
- <resources>
-  <include location="resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

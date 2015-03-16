@@ -6,7 +6,7 @@
 //#include "chat_widget.h"
 #include "settings_widget.h"
 #include "luascript.h"
-#include "LuaSrc/lua.hpp"
+//#include "LuaSrc/lua.hpp"
 #include <iostream>
 #include "lib.h"
 #include "form.h"
