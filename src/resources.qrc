@@ -1,0 +1,31 @@
+<RCC>
+    <qresource prefix="/btnIcons">
+        <file>icons/wrench_orange.png</file>
+        <file>icons/server_edit.png</file>
+        <file>icons/server.png</file>
+        <file>icons/group.png</file>
+        <file>icons/group_edit.png</file>
+        <file>icons/group_gear.png</file>
+        <file>icons/group_go.png</file>
+        <file>icons/bomb.png</file>
+        <file>icons/application_edit.png</file>
+        <file>icons/help.png</file>
+        <file>icons/cancel.png</file>
+        <file>icons/lightning.png</file>
+        <file>icons/arrow_refresh.png</file>
+        <file>icons/arrow_refresh_small.png</file>
+        <file>icons/bin.png</file>
+    </qresource>
+    <qresource prefix="/winIcons">
+        <file>announcement.ico</file>
+    </qresource>
+    <qresource prefix="/misc">
+        <file>icons/alert_icon.png</file>
+        <file>Thumb.png</file>
+        <file>about.html</file>
+        <file>loewct_logo1.fw.png</file>
+    </qresource>
+    <qresource prefix="/sound">
+        <file>WinXP-error1.wav</file>
+    </qresource>
+</RCC>
