@@ -140,8 +140,6 @@ void receiveMessage(Player* player)
         if (!player->connected)
             sendMessage(player, MsgConnectResponse, msg);
 
-
-
     }
     else if ((unsigned char)msg[0] == MsgConnectionEstablished) // Connect ACK
     {

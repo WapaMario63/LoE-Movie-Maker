@@ -39,7 +39,7 @@
    <string notr="true">LoE Movie Maker v1.0</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="resources.qrc">
     <normaloff>:/winIcons/announcement.ico</normaloff>:/winIcons/announcement.ico</iconset>
   </property>
   <widget class="QLabel" name="picBanner">
@@ -52,7 +52,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;img src=&quot;Thumb.png&quot;/&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/misc/Thumb.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btnOpenGame">
@@ -79,7 +79,7 @@
     <string>Launch LoE</string>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="resources.qrc">
      <normaloff>:/winIcons/announcement.ico</normaloff>:/winIcons/announcement.ico</iconset>
    </property>
   </widget>
@@ -650,7 +650,9 @@
    </property>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>cmdInput</sender>

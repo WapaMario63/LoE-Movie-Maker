@@ -307,6 +307,18 @@ void Form::sendCmdLine()
           }
         //cwin.logChatMessage("<SERVER> "+str);
     }
+    else if (str.startsWith("gm"))
+    {
+        str = str.right(str.size()-3);
+        if (str == "deathmatch")
+        {
+            for (int i=0; i<win.udpPlayers.size(); i++)
+            {
+                sendAnnouncementMessage(win.udpPlayers[i], "Gamemode changed to Deathmatch mode! You will be reloaded in 20 seconds.",20);
+            }
+        }
+    }
+
     if (win.cmdPeer->IP=="")
     {
         win.logMessage("[INFO] Select a player first with setPlayer or look for some with listPlayers");
@@ -763,7 +775,7 @@ void Form::sendCmdLine()
     {
         playerConfig.setValue("isModerator", false);
     }
-    else if (str.startsWith("announcement"))
+    else if (str.startsWith("announce"))
     {
         str = str.right(str.size()-13);
 

@@ -85,7 +85,7 @@ void receiveChatMessage(QByteArray msg, Player *player)
     }
   else if (txt.startsWith("!commands"))
     {
-      sendChatMessage(player, "Commands: !help, !motd, !rules, !rtd, !msg <ponyName> <msg>, !players, !mapTP <map>, !me <action>. More Commands Coming soon!", serverPrefix, ChatGeneral);
+      sendChatMessage(player, "Commands: !help, !motd, !rules, !roll, !msg <ponyName> <msg>, !players, !mapTP <map>, !me <action>. More Commands Coming soon!", serverPrefix, ChatGeneral);
     }
   else if (txt.startsWith("!rtd"))
     {
@@ -150,8 +150,17 @@ void receiveChatMessage(QByteArray msg, Player *player)
           }
         else
           {
-            sendChatMessage(player, "<span color=\"red\">You are not allowed to use this command.</span>", serverPrefix, ChatGeneral);
+            sendChatMessage(player, "<span color=\"red\">You are not allowed to use this command.</span>", serverPrefix, ChatSystem);
           }
+    }
+    else if (txt.startsWith("!vote"))
+    {
+        // This command only starts working on the class GameMode, we only get the number input here for use over said class.
+#include "gamemode.h"
+
+        //txt.remove(0, 6);
+        //if (!GameMode::votemap) sendChatMessage(player, "<span color=\"red\">There is no vote session!</span>", serverPrefix, ChatSystem);
+        //else GameMode::votenum = txt.toInt();
     }
   else
   {
