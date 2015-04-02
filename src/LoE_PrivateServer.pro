@@ -50,7 +50,8 @@ SOURCES += main.cpp \
     modmanager.cpp \
     shops.cpp \
     permissions.cpp \
-    gamemode.cpp
+    gamemode.cpp \
+    CustomContentManager.cpp
 
 HEADERS  += widget.h \
 	character.h \
@@ -89,7 +90,8 @@ HEADERS  += widget.h \
     modmanager.h \
     shops.h \
     permissions.h \
-    gamemode.h
+    gamemode.h \
+    CustomContentManager.h
 
 FORMS    += widget.ui \
     settings_widget.ui \

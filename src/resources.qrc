@@ -10,11 +10,11 @@
         <file>icons/bomb.png</file>
         <file>icons/application_edit.png</file>
         <file>icons/help.png</file>
-        <file>icons/cancel.png</file>
         <file>icons/lightning.png</file>
         <file>icons/arrow_refresh.png</file>
         <file>icons/arrow_refresh_small.png</file>
         <file>icons/bin.png</file>
+        <file>icons/cancel.png</file>
     </qresource>
     <qresource prefix="/winIcons">
         <file>announcement.ico</file>
@@ -24,8 +24,5 @@
         <file>Thumb.png</file>
         <file>about.html</file>
         <file>loewct_logo1.fw.png</file>
-    </qresource>
-    <qresource prefix="/sound">
-        <file>WinXP-error1.wav</file>
     </qresource>
 </RCC>

@@ -7,6 +7,53 @@
 #include "form.h"
 #include <QFile>
 
+void QuestFunction::launchFunction(function func, QString args, Player *player)
+{
+    QList<QString> arg = args.split(" , ");
+
+    switch (func)
+    {
+    case q_sendChatMessage:         sendChatMessage(player, arg[0], "[QUEST]", ChatGeneral);
+    case q_sendAnnouncementMessage: sendAnnouncementMessage(player, arg[0], arg[1].toFloat());
+    case q_teleportPlayer:          sendMove(player, arg[0].toFloat(), arg[1].toFloat(), arg[2].toFloat());
+    case q_teleportPlayerScene:     sendLoadSceneRPC(player, arg[0]);
+    case q_spawnInstantiate:        sendNetviewInstantiate(player);
+    case q_logToServer:             win.logMessage("[INFO] "+arg[0]);
+    case q_sendMessageBox:
+        QByteArray data(1,0);
+        data[0] = 0x7F;
+
+        data += stringToData(arg[0]);
+        sendMessage(player, MsgUserReliableOrdered4, data);
+    case q_spawnNpc:
+        unsigned nQuest = 0;
+        QDir npcsDir("/data/npcs/");
+        QStringList files = npcsDir.entryList(QDir::Files);
+        for (int i=0; files.size(); i++, nQuest++)
+        {
+            QFile file(arg[0]);
+            if (file.exists())
+            {
+                Quest *quest = new Quest("/data/npcs/"+arg[0], player);
+                win.quests << *quest;
+                win.npcs << quest->npc;
+
+                win.logMessage("[INFO] Loaded NPC called by Another NPC. Amount: "+QString().setNum(nQuest));
+            }
+            else
+            {
+                QByteArray data(1,0);
+                data[0] = 0x7F;
+
+                data += stringToData("ERROR \n---------------\nCould not load an NPC called by the NPC you are speaking to! \nERROR LOG\n File '"+arg[0]+"' not found. Aborting request.");
+                sendMessage(player, MsgUserReliableOrdered4, data);
+                win.logMessage("[ERROR] Could not load NPC called by another NPC. File is: +"+arg[0]);
+            }
+        }
+    }
+}
+
+
 Quest::Quest(QString path, Player *Owner)
 {
     QFile file(path);
@@ -592,6 +639,19 @@ bool Quest::doCommand(int commandEip)
         {
             logError("gotoAfterState takes 2 or 3 arguments");
             return false;
+        }
+    }
+    else if (command[0] == "runFunction")
+    {
+        if (command[1] == "sendChatMessage")
+        {
+            QString msg = command[2];
+            QuestFunction::launchFunction(QuestFunction::q_sendChatMessage, msg, owner);
+        }
+        else if (command[1] == "sendAnnouncement")
+        {
+            QString msg = command[2];
+            QuestFunction::launchFunction(QuestFunction::q_sendAnnouncementMessage, msg, owner);
         }
     }
     else

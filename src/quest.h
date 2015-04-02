@@ -7,6 +7,25 @@
 class Player;
 class Pony;
 
+
+struct QuestFunction
+{
+    enum function
+    {
+        q_sendChatMessage,
+        q_sendAnnouncementMessage,
+        q_sendMessageBox,
+        q_teleportPlayer,
+        q_teleportPlayerScene,
+        q_spawnInstantiate,
+        q_spawnNpc,
+        q_logToServer,
+        q_downloadCustomContent
+    };
+
+    static void launchFunction(function func, QString args, Player *player);
+};
+
 // Quests are bound to one NPC
 // They define the NPC, what he say, and the reactions.
 struct Quest
