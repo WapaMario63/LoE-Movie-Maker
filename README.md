@@ -1,6 +1,9 @@
 ## LoE-Movie-Maker
 A [LoEWCT] Server made for the making of Legends of Equestria Machinima
 
+## Screenshot
+<img src="http://i.imgur.com/t1LbU0Z.jpg"/>
+
 ## FAQ
 
 ### Can I run a normal LoEWCT server with this?
@@ -29,4 +32,4 @@ Uhhh, no... no, toally not! .........
 
 ....
 
-Fuck, you got me, but I will be moving them over to the [LoEWCT] remake [here](https://github.com/WapaMario63/LoEWCT).
+Okay fine, yes, but they may not be finished until I can support newer LoE Clients on [LoEWCT] itself first.
