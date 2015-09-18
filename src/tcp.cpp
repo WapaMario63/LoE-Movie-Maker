@@ -394,6 +394,7 @@ void Widget::tcpProcessData(QByteArray data, QTcpSocket* socket)
                 }
             }
 
+
             if (ok) // Send servers list
             {
 

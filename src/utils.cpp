@@ -12,7 +12,8 @@ void saveResourceToDataFolder(QString resRelPath)
     win.logMessage(QString("Saving ")+resRelPath);
     QString dataPath = QDir::homePath()+"/AppData/LocalLow/LoE/Legends of Equestria/";
     QFile::remove(dataPath+resRelPath);
-    QFile::copy(QString(":/gameFiles/")+resRelPath, dataPath+resRelPath);
+    //QFile::copy(QString(":/gameFiles/")+resRelPath, dataPath+resRelPath);
+    QFile::copy(QApplication::applicationDirPath()+"/data/data/"+resRelPath, dataPath+resRelPath);
     //SetFileAttributesA(QString(dataPath+resRelPath).toStdString().c_str(),FILE_ATTRIBUTE_NORMAL);
 }
 

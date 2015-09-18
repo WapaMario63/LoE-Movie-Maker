@@ -823,7 +823,7 @@ void sendAnimation(Player *player, const Animation *animation)
 // Still, the red text stays on the screen too long, sometimes, it freezes there.
 // Trying to figure how to send the time limit to the client.
 
-// -> Testing if just sending the raw speicified time sends it to the client to show it on said floating time.
+// -> Testing if just sending the raw specified time sends it to the client to show it on said floating time.
 // --> Works! My job on this one is done. Tux3 got BTFO on this one.
 
 // (9/16/14) ~WapaMario63

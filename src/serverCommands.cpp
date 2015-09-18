@@ -8,6 +8,47 @@
 #include "loewct_main.h"
 #include "form.h"
 
+
+void Form::cmdStopServer()
+{
+    logMessage(QString("[INFO] Stopping server..."));
+    stopServer();
+    logStatusMessage(QString("[INFO] Server Stopped"));
+
+    logMessage(QString("[INFO] You may close the window now."));
+}
+void Form::cmdStartServer()
+{
+    if (!udpSocket)
+      {
+        logMessage(QString("[INFO] Starting Server..."));
+        startServer();
+      }
+}
+void Form::cmdShowHelp()
+{
+    logMessage(QString("[INFO] Here is a list of normal commands: clear, stop, help, listTopPlayers, tp <player> <player>, setPlayer, listPlayers, move <x> <y> <z>, load <map>, getPos, getRot, error <message>, kick. \nFor debug commands use helpDebug."));
+}
+void Form::cmdShowDebugHelp()
+{
+    logMessage(QString("[INFO] Debug commands, don't mess with these much: listVortexes, sync, dbgStressLoad, getPonyData, sendPonies, setPlayerId, reloadNpc, sendPonyData, setStat, setMaxStat, instantiate, beginDialog, endDialog, setDialogMsg, setDialogOptions"));
+}
+void Form::cmdListTcpPlayers()
+{
+    for (int i=0; i<win.tcpPlayers.size(); i++)
+    {
+        Player* p = win.tcpPlayers[i];
+        win.logMessage(p->name+" "+p->IP+":"+QString().setNum(p->port));
+    }
+}
+
+void Form::cmdSetPlayer()
+{
+    win.cmdPeer = win.udpPlayers[0];
+    QString peerName = win.cmdPeer->IP + ":" + QString().setNum(win.cmdPeer->port);
+    win.logMessage(QString("[INFO] UDP: Player has been set to ").append(peerName));
+}
+
 // Processes the commands entered directly in the server, not the chat messages
 
 // This file is entirely commented for LoE Movie Maker

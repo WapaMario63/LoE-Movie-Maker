@@ -52,9 +52,19 @@ enum ChatIcon
 {
     Mod = 1,
     None = 0,
-    System = 2
+    System = 2,
+    Admin = 3
 };
 
+#if defined BABSCON15
+enum PonyGender
+{
+    Colt = 1,
+    Filly = 0,
+    Mare = 2,
+    Stallion = 3,
+};
+#endif
 // Public functions
 class Player;
 class Pony;
@@ -106,5 +116,8 @@ void sendEndShop(Player* player);
 void sendAddViewAddShop(Player* player, Pony* npcShop);
 void sendAnimation(Player* player, const Animation* animation);
 void sendAnnouncementMessage(Player* player, QString msg, float time); // Announcment Boxes and Red text
+#if defined BABSCON15
+void sendLoadRoomRPC(Player* player, quint16 id); // Load a room to the player
+#endif
 
 #endif // MESSAGE_H

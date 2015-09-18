@@ -21,6 +21,13 @@ enum class SkillTarget
     Self=4
 };
 
+#if defined BABSCON15
+enum class SkillProcessingType
+{
+    CSScript = 1,
+    Generic = 0,
+};
+#endif
 struct SkillTargetEffect
 {
 public:

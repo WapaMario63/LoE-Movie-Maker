@@ -38,6 +38,7 @@ public:
     void processAnswer(); // Called when a client clicks on a dialog with no proposed answer
     int findLabel(QString label); // Returns the eip of this label
     void logError(QString message); // Logs errors while running a quest script
+    void exception(QString msg);
     void setOwner(Player* Owner);
 
 private:

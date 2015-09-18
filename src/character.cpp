@@ -246,7 +246,7 @@ void Player::savePonies(Player *player, QList<Pony> ponies)
 // Also creates that .ini file
 // (7/5/2014)
 // Deprecated. (9/14/2014)
-void Player::savePlayerData(Player *player, QList<Pony> ponies)
+/*void Player::savePlayerData(Player *player, QList<Pony> ponies)
 {
     win.logMessage("[INFO] UDP: Saving player Data for "+QString().setNum(player->pony.id)+" ("+player->name+")");
 
@@ -259,14 +259,14 @@ void Player::savePlayerData(Player *player, QList<Pony> ponies)
         {
             file.write(ponies[i].ponyData.toBase64()+"\n");
         }
-    }*/
+    }
 
     QFile inifile(QDir::currentPath()+"/data/players/"+player->name.toLatin1()+"/player.ini");
     inifile.open(QIODevice::ReadWrite);
     QSettings playerConfig(QDir::currentPath()+"/data/players/"+player->name.toLatin1()+"/player.ini",QSettings::IniFormat);
     PlayerSettings::isBanned = playerConfig.value("isBanned", false).toBool();
     PlayerSettings::isModerator = playerConfig.value("isModerator", false).toBool();
-}
+}*/
 
 QList<Pony> Player::loadPonies(Player* player)
 {
@@ -357,7 +357,7 @@ void Player::disconnectPlayerCleanup(Player* player)
         if (ponies[i].ponyData == player->pony.ponyData)
             ponies[i] = player->pony;
     savePonies(player, ponies);
-    savePlayerData(player, ponies);
+    //savePlayerData(player, ponies);
     player->pony.saveQuests();
     player->pony.saveInventory();
 
@@ -439,64 +439,67 @@ void Player::udpResendLast()
 
 void Player::udpDelayedSend()
 {
-    //win.logMessage("udpDelayedSend locking");
-    if (!udpSendReliableMutex.tryLock())
+    //win.logMessage("[INFO] udpDelayedSend locking");
+    if (!udpSendReliableMutex.tryLock(100))
     {
-        win.logMessage("udpDelayedSend failed to lock.");
+        win.logMessage("[ERROR] Failed to lock UDP Send Reliable Mutex.");
+
         if (!udpSendReliableTimer->isActive())
           {
             udpSendReliableTimer->start();
           }
         return; // Avoid deadlock if sendMessage just locked but didn't have the time to stop the timers
     }
-    //udpSendReliableMutex.lock();
-    //win.logMessage("Sending delayed grouped message : "+QString(udpSendReliableGroupBuffer.toHex()));
-
-    // Move the grouped message to the reliable queue
-    udpSendReliableQueue.append(udpSendReliableGroupBuffer);
-
-    // If this is the only message queued, send it now
-    // If it isn't, we need to wait until the previous one was ACK'd
-    if (udpSendReliableQueue.size() >= 1)
+    else
     {
-        // Simulate packet loss if enabled (DEBUG ONLY!)
-#if UDP_SIMULATE_PACKETLOSS
-        if (qrand() % 100 <= UDP_SEND_PERCENT_DROPPED)
-        {
-            if (UDP_LOG_PACKETLOSS)
-                win.logMessage("UDP: Delayed send packet dropped !");
-            udpSendReliableGroupBuffer.clear();
-            if (!udpSendReliableTimer->isActive())
-                udpSendReliableTimer->start();
-            //win.logMessage("udpDelayedSend unlocking");
-            udpSendReliableMutex.unlock();
-            return;
-        }
-        else if (UDP_LOG_PACKETLOSS)
-            win.logMessage("UDP: Delayed send packet got throught");
-#endif
+        //win.logMessage("Sending delayed grouped message : "+QString(udpSendReliableGroupBuffer.toHex()));
 
-        if (win.udpSocket->writeDatagram(udpSendReliableGroupBuffer,QHostAddress(IP),port) != udpSendReliableGroupBuffer.size())
+        // Move the grouped message to the reliable queue
+        udpSendReliableQueue.append(udpSendReliableGroupBuffer);
+
+        // If this is the only message queued, send it now
+        // If it isn't, we need to wait until the previous one was ACK'd
+        if (udpSendReliableQueue.size() >= 1)
         {
-            win.logMessage("UDP: Error sending last message");
-            win.logStatusMessage("Restarting UDP server ...");
-            win.udpSocket->close();
-            if (!win.udpSocket->bind(win.gamePort, QUdpSocket::ReuseAddressHint|QUdpSocket::ShareAddress))
+            // Simulate packet loss if enabled (DEBUG ONLY!)
+    #if UDP_SIMULATE_PACKETLOSS
+            if (qrand() % 100 <= UDP_SEND_PERCENT_DROPPED)
             {
-                win.logStatusMessage("UDP: Unable to start server on port "+QString().setNum(win.gamePort));
-                win.stopServer();
+                if (UDP_LOG_PACKETLOSS)
+                    win.logMessage("UDP: Delayed send packet dropped !");
+                udpSendReliableGroupBuffer.clear();
+                if (!udpSendReliableTimer->isActive())
+                    udpSendReliableTimer->start();
+                //win.logMessage("udpDelayedSend unlocking");
+                udpSendReliableMutex.unlock();
                 return;
             }
+            else if (UDP_LOG_PACKETLOSS)
+                win.logMessage("UDP: Delayed send packet got throught");
+    #endif
+
+            if (win.udpSocket->writeDatagram(udpSendReliableGroupBuffer,QHostAddress(IP),port) != udpSendReliableGroupBuffer.size())
+            {
+                win.logMessage("UDP: Error sending last message");
+                win.logStatusMessage("Restarting UDP server ...");
+                win.udpSocket->close();
+                if (!win.udpSocket->bind(win.gamePort, QUdpSocket::ReuseAddressHint|QUdpSocket::ShareAddress))
+                {
+                    win.logStatusMessage("UDP: Unable to start server on port "+QString().setNum(win.gamePort));
+                    win.stopServer();
+                    return;
+                }
+            }
         }
+
+        udpSendReliableGroupBuffer.clear();
+
+        if (!udpSendReliableTimer->isActive())
+            udpSendReliableTimer->start();
+
+        //win.logMessage("udpDelayedSend unlocking");
+            udpSendReliableMutex.unlock();
     }
-
-    udpSendReliableGroupBuffer.clear();
-
-    if (!udpSendReliableTimer->isActive())
-        udpSendReliableTimer->start();
-
-    //win.logMessage("udpDelayedSend unlocking");
-    udpSendReliableMutex.unlock();
 }
 
 void Pony::saveQuests()

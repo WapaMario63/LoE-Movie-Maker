@@ -33,6 +33,7 @@ void Sync::doSync()
                     continue;
                 sendSyncMessage(win.scenes[i].players[j], win.scenes[i].players[k]);
             }
+
     }
 }
 

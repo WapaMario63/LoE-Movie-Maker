@@ -6,10 +6,14 @@
 #include "serialize.h"
 #include "mob.h"
 #include "settings_widget.h"
+#include <demo.h>
 
 #include <QProcess>
 #include <QMessageBox>
 #include <QSound>
+#include <QtMath>
+#include <QDesktopServices>
+#include <QUrl>
 
 bool ServerVersion::isBABSCon = true; // Use BABScon14 Configurations
 bool ServerVersion::isAugust = false; // Use August14 Configurations
@@ -43,6 +47,13 @@ Form::Form(QWidget *parent) :
     QTimer* timer = new QTimer();
     connect(timer, SIGNAL(timeout()), this, SLOT(refreshPlayerList()));
     timer->start(5000);
+
+    ui->sbxNpcMeters->setHidden(true);
+    ui->lblMetersInThe->setHidden(true);
+    ui->lblMeterCords->setHidden(true);
+    ui->cbxNpcMeterX->setHidden(true);
+    ui->cbxNpcMeterY->setHidden(true);
+    ui->cbxNpcMeterZ->setHidden(true);
 }
 
 Form::~Form()
@@ -106,7 +117,7 @@ void Form::sendCmdLine()
         win.stopServer();
         win.logStatusMessage(QString("[INFO] Server Stopped"));
 
-        win.logMessage(QString("[INFO] You may close the window now."));
+        win.logMessage(QString("[INFO] You may close the window now."));s
     }
     else if (str == "start")
       {
@@ -297,6 +308,7 @@ void Form::sendCmdLine()
             }
         }
         win.logMessage("[INFO] Error: Source player is not on the server or doesn't exist!");
+        return;
     }
     else if (str.startsWith("say"))
     {
@@ -306,6 +318,7 @@ void Form::sendCmdLine()
             sendChatMessage(win.udpPlayers[i], "<span color=\"cyan\">"+str+"</span>", "[SERVER]", ChatGeneral);
           }
         //cwin.logChatMessage("<SERVER> "+str);
+        return;
     }
     else if (str.startsWith("gm"))
     {
@@ -317,6 +330,17 @@ void Form::sendCmdLine()
                 sendAnnouncementMessage(win.udpPlayers[i], "Gamemode changed to Deathmatch mode! You will be reloaded in 20 seconds.",20);
             }
         }
+    }
+    else if (str.startsWith("announceall"))
+    {
+        str = str.right(str.size()-12);
+
+        QStringList args = str.split('|');
+        if (args.size() != 2) return;
+
+        sendAnnouncementMessage(win.cmdPeer, args[1], args[0].toFloat());
+
+        return;
     }
 
     if (win.cmdPeer->IP=="")
@@ -446,11 +470,18 @@ void Form::sendCmdLine()
         str = str.mid(10);
         Pony* npc = NULL;
         for (int i=0; i<win.npcs.size(); i++)
+        {
             if (win.npcs[i]->name == str)
             {
                 npc = win.npcs[i];
                 break;
             }
+            else if (QString().setNum(win.npcs[i]->id) == str)
+            {
+                npc = win.npcs[i];
+                break;
+            }
+        }
         if (npc != NULL)
         {
             // Reload the NPCs from the DB
@@ -580,7 +611,7 @@ void Form::sendCmdLine()
             win.logStatusMessage(QString("[INFO] Error : Instantiate takes 0,3,6 or 10 arguments").append(str));
             return;
         }
-        // Au as au moins les 3 premiers de toute facon
+        // Au as au moins les 3 premiers de toute facon (google translated: To have at least the first 3 anyway)
         data += stringToData(args[0]);
         unsigned viewId, ownerId;
         bool ok1, ok2;
@@ -599,7 +630,7 @@ void Form::sendCmdLine()
         data += params1;
         float x1=0,y1=0,z1=0;
         float x2=0,y2=0,z2=0,w2=0;
-        if (args.size() >= 6) // Si on a le vecteur position on l'ajoute
+        if (args.size() >= 6) // Si on a le vecteur position on l'ajoute (google translated: If one has the position vector is added)
         {
             bool ok1, ok2, ok3;
             x1=args[3].toFloat(&ok1);
@@ -777,7 +808,7 @@ void Form::sendCmdLine()
     }
     else if (str.startsWith("announce"))
     {
-        str = str.right(str.size()-13);
+        str = str.right(str.size()-9);
 
         QStringList args = str.split('|');
         if (args.size() != 2) return;
@@ -868,7 +899,7 @@ void Form::launchClient()
     if (clientExePath == "" && clientExePathA == "" && clientExePathO == "" && clientExePathJ == "")
     {
         win.logMessage("[INFO] There are no clients!");
-        MsgBox(MsgBoxType::Critical, "Error", "No Clients found! \nMake sure there is a .loe file with the name of the exe.");
+        MsgBox(MsgBoxType::Critical, "Error", "No Clients found! \nMake sure there is a .ini file with the name of the exe.");
     }
     else
     {
@@ -950,7 +981,11 @@ void Form::on_btnPlayerTp_clicked()
 
 void Form::on_btnPosTp_clicked()
 {
-    if (win.cmdPeer->IP=="") MsgBox(MsgBoxType::Warning, "Error", "No Player Set!");
+    if (win.cmdPeer->IP=="") // <-- This asshole causes crashes when used on an UI system.
+                             //     Can't do crap about it since it's a core server variable
+                             //     And I use it for checking if a player has been set or not,
+                             //     because if I don't ugly things happen.
+        MsgBox(MsgBoxType::Warning, "Error", "No Player Set!");
     else externCmdLine("move "+ui->txtPosX->text()+" "+ui->txtPosY->text()+" "+ui->txtPosZ->text());
 }
 
@@ -995,11 +1030,11 @@ void Form::on_btnSetPlayer_clicked()
 
 void Form::on_listPlayers_itemClicked(QListWidgetItem *item)
 {
-    QString itm = item->text();
-    QStringList args = itm.split(' ');
+    QStringList args = item->text().split(' ');
 
     //ui->lineEdit->setText(args[0]);
     lwin.externCmdLine("setPlayer "+args[0]);
+    ui->lblPlayerSetStatus->setText("Player set to "+args[0]);
 }
 
 void Form::on_pushButton_clicked()
@@ -1043,4 +1078,37 @@ void Form::on_btnStartStopServer_clicked()
         ui->btnStartStopServer->setText("Start Server");
         ui->cbxServerSelector->setDisabled(false);
     }
+}
+
+void Form::on_pushButton_2_clicked()
+{
+    dem.show();
+}
+
+
+
+void Form::on_btnAboutQt_clicked()
+{
+    QMessageBox::aboutQt(this, "About Qt");
+}
+
+void Form::on_btnAbout_clicked()
+{
+    QString ITSABRAKEM8 = "</p>";
+    QMessageBox::about(this, "About LoE Movie Maker",
+           "<p><b>About LoE Movie Maker<b>"+ITSABRAKEM8+
+           "<p>LoE Movie Maker is a program made for the use of making Legends of Equestria Machinima and Bloopers."+ITSABRAKEM8+
+           "<p>LoE Movie Maker utilizes [LoEWCT] v0.6.1 for it's LoE Private Server functionality."+ITSABRAKEM8+
+           "<p>LoE Movie Maker and [LoEWCT] are made by WapaMario63, uses code from the original mlkj's Private Server, which uses the MIT license (it changed to the GPLv3 on the UI overhall, which has never been ported to [LoEWCT])"+ITSABRAKEM8+
+           "<p>LoE Movie Maker and [LoEWCT] are licensed under the MIT license (was going to be GPL, but it kinda scared me away).</p>");
+}
+
+void Form::on_btnWebsiteLink_clicked()
+{
+    QDesktopServices::openUrl(QUrl("http://www.loewct.tk/"));
+}
+
+void Form::on_btnNPCManager_clicked()
+{
+
 }

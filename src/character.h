@@ -22,12 +22,60 @@
 struct Pony : public SceneEntity, public StatsComponent
 {
 public:
+#if defined BABSCON15
+    // Some of these may be placed on other classes/files/structs/etc
+    enum Race
+    {
+        Race_All = 15, // Alicorn? hue
+        Race_Earth = 1,
+        Race_Moose = 8,
+        Race_None = 0,
+        Race_Pegasus = 4,
+        Race_Unicorn = 2
+    };
+    enum CutieClass
+    {
+        Cutie_All = 0xFFFF,
+        Cutie_Animal = 0x80,
+        Cutie_Artisan = 0x2000,
+        Cutie_Combat = 0x8000,
+        Cutie_CombatRelated = 0x858C, // Wait. two?
+        Cutie_Cooking = 1,
+        Cutie_Economic = 0x1000,
+        Cutie_Farming = 0x40,
+        Cutie_Fashion = 0x4000,
+        Cutie_Flying = 0x100,
+        Cutie_Magic = 0x400,
+        Cutie_Medical = 0x4,
+        Cutie_Mining = 0x2,
+        Cutie_Music = 0x10,
+        Cutie_None = 0x0,
+        Cutie_Partying = 8,
+        Cutie_Science = 0x800,
+        Cutie_Weather = 0x200,
+        Cutie_Writing = 0x20
+    };
+    enum DamageType
+    {
+        Dmg_Dragon = 0x400,
+        Dmg_Fire = 0x80,
+        Dmg_Glass = 0x10,
+        Dmg_Ground = 0x100,
+        Dmg_Ice = 0x40,
+        Dmg_Magical = 0x4,
+        Dmg_None = 0x0,
+        Dmg_Physical = 0x2,
+        Dmg_Poison = 0x8,
+        Dmg_Phychic = 0x20,
+        Dmg_Steel = 0x200
+    };
+
+#endif
+
     enum type
     {
-        //All,
         None,
         EarthPony,
-        //Earth,
         Unicorn,
         Pegasus,
         Moose
@@ -65,11 +113,21 @@ public:
     float defense;
 };
 
-class Player : QObject
+class Player : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(Player)
 
+#if defined BABSCON15
+    enum ChracacterType
+    {
+        EarthPony = 1,
+        Moose = 4,
+        None = 0,
+        Pegasus = 3,
+        Unicorn = 2
+    };
+#endif
 public:
     Player();
     ~Player();

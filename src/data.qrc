@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>data/login.bin</file>
+        <file>data/netData/login.bin</file>
     </qresource>
 </RCC>

@@ -7,16 +7,17 @@
 #include "loewct_main.h"
 #include "settings.h"
 #include "form.h"
+#include <demo.h>
 
 void receiveChatMessage(QByteArray msg, Player *player)
 {
-  QSettings loeWctConfig(LOEWCTCONFIGFILEPATH, QSettings::IniFormat);
-  QString motdMessage = loeWctConfig.value("motdMessage", "Parties at Sugarcane Corner are always AWESOME! Why don't you join the party?").toString();
-  QString rulesMessage = loeWctConfig.value("rulesMessage", "Server rules: \n1.No Swearing excesively \n2.Respect Others \n3.HAVE FUN!").toString();
-  QString helpMessage = loeWctConfig.value("helpMessage", "Welcome to our Legends of Equestria Server! \nType !?cmds to view some commands for this server.").toString();
-  QString serverPrefix = loeWctConfig.value("serverPrefix", "[LoEWCT]").toString();
-  bool mapTpEnable = loeWctConfig.value("playerMapTp", true).toBool();
-  int rollCoolDown = loeWctConfig.value("rollCoolDown", 10).toInt();
+    QSettings loeWctConfig(LOEWCTCONFIGFILEPATH, QSettings::IniFormat);
+    QString motdMessage = loeWctConfig.value("motdMessage", "Parties at Sugarcane Corner are always AWESOME! Why don't you join the party?").toString();
+    QString rulesMessage = loeWctConfig.value("rulesMessage", "Server rules: \n1.No Swearing excesively \n2.Respect Others \n3.HAVE FUN!").toString();
+    QString helpMessage = loeWctConfig.value("helpMessage", "Welcome to our Legends of Equestria Server! \nType !?cmds to view some commands for this server.").toString();
+    QString serverPrefix = loeWctConfig.value("serverPrefix", "[LoEWCT]").toString();
+    bool mapTpEnable = loeWctConfig.value("playerMapTp", true).toBool();
+    int rollCoolDown = loeWctConfig.value("rollCoolDown", 10).toInt();
 
   QString txt = dataToString(msg.mid(7));
   QString author = player->pony.name;
@@ -56,7 +57,7 @@ void receiveChatMessage(QByteArray msg, Player *player)
           for (Player* other : scene->players)
               sendNetviewRemove(other, player->pony.netviewId, NetviewRemoveReasonKill);
       }
-    }
+  }
   else if (txt.startsWith("!shout"))
   {
       txt.remove(0, 7);
@@ -161,6 +162,43 @@ void receiveChatMessage(QByteArray msg, Player *player)
         //txt.remove(0, 6);
         //if (!GameMode::votemap) sendChatMessage(player, "<span color=\"red\">There is no vote session!</span>", serverPrefix, ChatSystem);
         //else GameMode::votenum = txt.toInt();
+    }
+    /*else if (txt.startsWith("!demo"))
+    {
+        sendChatMessage(player,"<span color=\"orange\">[LoEWCT] Demo Recorder \nArguments are: \n!demo record - Records a demo. \n!demo stop - Stops recording a demo</span>", "[LoEWCT Demo Manager]", ChatSystem);
+    }*/
+    else if (txt.startsWith("!demorecord"))
+    {
+        txt.remove(0, 13);
+        if (dem.isRecording) sendChatMessage(player,"<span color=\"orange\">You are already recording!</span>", "[LoEWCT Demo Manager]", ChatSystem);
+        else
+        {
+            sendChatMessage(player,"<span color=\"orange\">Recording demo with name "+txt+".</span>", "[LoEWCT Demo Manager]", ChatSystem);
+            dem.demoSyncRecord("/demos/"+txt+".loedemo");
+            dem.isRecording = true;
+        }
+    }
+    else if (txt.startsWith("!demostop"))
+    {
+        if (dem.isRecording)
+        {
+            dem.stopDemo(true);
+            dem.isRecording = false;
+            sendChatMessage(player,"<span color=\"orange\">Stopped recording demo. It has been saved in the server's demos folder.</span>", "[LoEWCT Demo Manager]", ChatSystem);
+        }
+        else sendChatMessage(player,"<span color=\"orange\">You are not recording a demo!</span>", "[LoEWCT Demo Manager]", ChatSystem);
+    }
+    else if (txt == ("!demoplay"))
+    {
+
+    }
+    else if (txt.startsWith("!generatenpc"))
+    {
+        sendChatMessage(player,"<span color=\"orange\">An npc of yourself is being generated...</span>", "[LoEWCT]", ChatSystem);
+        dem.generateNpc(player, player->pony.name);
+        lwin.externCmdLine("reloadNpc "+player->pony.name);
+        sendLoadSceneRPC(player,player->pony.sceneName.toLower(),UVector(player->pony.pos.x,player->pony.pos.y,player->pony.pos.z));
+        sendChatMessage(player,"<span color=\"orange\">Npc succesfully generated!</span>", "[LoEWCT]", ChatSystem);
     }
   else
   {

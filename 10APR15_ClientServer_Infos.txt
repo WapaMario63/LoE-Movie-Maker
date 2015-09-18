@@ -1,0 +1,51 @@
+================= Packets =================
+
+These packets are what I could gather from the official servers.
+
+Packet data starts from the first Hex digit, but the next 5 are ignored, for example this is the data sent to client for loading characters 
+45 00 00 20 01 b4 01 04 c0 63 53 2e 25 37 0a 43 68 61 72 61 63 74 65 72 73 28 19 15 19 97 bf 94 49 80 9e 94 a4 52 97 93 91
+But this is the actual data 
+45 01 04 C0 ..
+Another example, but with chat.
+Data:
+45 06 00 18 02 bc 0f 04 0a 4d 61 72 6b 73 61 6c 69 6e 65 27 2d 47 72 65 65 74 73 20 74 68 65 20 70 72 69 6e 63 65 73 73 20 77 69 74 68 20 61 20 73 6c 69 67 68 74 20 62 6f 77 2d 7e 23 f6 aa 85 43 d2 48 31 2e 00 00 00
+Actual Data:
+45 0F 04 0A ..
+
+These remain the same as before BUT we do Connection SYN and ACKs BEFORE we Ping and Pong. Data Acking, Pinging and Ponging happens every few seconds while playing.
+
+81 Ping
+82 Pong
+83 Conx SYN
+84 Conx SYN|ACK
+85 Conx ACK
+86 Data Ack
+87 Disconnect
+
+Reliable messages changed from 46 to 45. So heres a copy-paste from tux3's packet info with 45 instead. Not all of these are confirmed to be true.
+
+45 Reliable messages, often RPC calls to network views
+45 01 Send a player's ponies list (at the character screen) (GetPonies)
+45 02 Remove pony
+45 03 Check name
+45 0B BeginDialog
+45 0C SetDialogOptions
+45 0D EndDialog
+45 0E ProcessJournals
+45 0F Chat message
+45 11 SetDialogMessage
+45 14 ProcessGroupRPC
+45 28 TimeFromServer
+45 35 AddNavNode
+45 37 ReceiveFullNav
+45 39 GotNavPath
+45 3C ReceiveFullPBT
+45 3E ReceivePBTTypes
+45 3F ReceiveResourcePBTs
+45 7F Error 
+45 C9 Announcment
+45 CB Rename
+45 CE Teleport
+45 D2 ProcessUtils
+
+More to come.

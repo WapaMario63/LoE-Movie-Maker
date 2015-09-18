@@ -1,4 +1,5 @@
 #include "serialize.h"
+#include <QtMath>
 
 QByteArray doubleToData(double num)
 {
@@ -236,4 +237,90 @@ QByteArray uint32ToData(uint32_t num)
     data[2] = (uint8_t)((num>>16) & 0xFF);
     data[3] = (uint8_t)((num>>24) & 0xFF);
     return data;
+}
+
+// I don't know why I made these (they are from LoE's source code, RotationHelper.cs in LoE.Shared.dll)
+// anything that uses the Math class uses QtMath (ex: Cos was Math.Cos(), now its qCos()). Wait, you expect me to use the standard library? Fuck that shit. I only use it if it is necessary.
+double RotationHelper::DegreeToRadian(double angle)
+{
+    return ((3.1415926535897931 * angle) * 0.00555556);
+}
+
+double RotationHelper::RadianToDegree(double angle)
+{
+    return (angle * 57.295779513082323);
+}
+
+UQuaternion* RotationHelper::EulToQuat2(UVector eu)
+{
+    UQuaternion* quat = new UQuaternion;
+
+    double n  = qCos(eu.y * 0.5);
+    double n2 = qSin(eu.y * 0.5);
+    double n3 = qCos(eu.x * 0.5);
+    double n4 = qSin(eu.x * 0.5);
+    double n5 = qCos(eu.z * 0.5);
+    double n6 = qSin(eu.z * 0.5);
+    double n7 = n * n3;
+    double n8 = n2 * n4;
+    quat->w = (float)((n7 * n5) - (n8 * n6));
+    quat->x = (float)((n7 * n6) + (n8 * n5));
+    quat->y = (float)(((n2 * n3) * n5) + ((n * n4) * n6));
+    quat->z = (float)(((n * n4) *n5) - ((n2 * n3) * n6));
+
+    return quat;
+}
+
+/*UVector RotationHelper::FromUQuat(UQuaternion q)
+{
+    float n, n2, n3;
+    float w = q.w;
+    float x = q.x;
+    float y = q.y;
+    float z = q.z;
+    float n4 = w * w;
+    float n5 = x * x;
+    float n6 = y * y;
+    float n7 = z * z;
+    float n8 = ((n5 + n6) + n7) + n4;
+    float n9 = (x * w) - (y * z);
+    if (n9 > (0.4995f * n8))
+    {
+        n2 = (float)(2.0 * qAtan2((double)y, (double)x));
+        n  = 1.570796f;
+        n3 = 0;
+
+        return NormalizeAngles((UVector)(new UVector(n,n2,n3) * 57.2958));
+    }
+    if (n9 < (-0.4995f * n8))
+    {
+        n2 = (float)(-2.0 * qAtan2((double)y, (double)x));
+        n  = -1.570796;
+        n3 = 0;
+
+        return NormalizeAngles((UVector)(new UVector(n,n2,n3) * 57.2958));
+    }
+
+    n2 = (float) qAtan2((double)(((2f * w) * y) + ((2f * z) * x)), (double)(1f - (2f * (n5 + n6))));
+    n  = (float) qAsin((double)(2f * ((w * x) - (y * z))));
+    n3 = (float) qAtan2((double)(((2f * w) * z) + ((2f * x) * y)), (double)(1f - (2f * (n7 + n5))));
+
+    return NormalizeAngles((UVector)(new UVector(n,n2,n3) * 57.2958f));
+}*/
+
+float RotationHelper::NormalizeAngle(float angle)
+{
+    while (angle > 360) angle -= 360;
+    while (angle < 0)   angle += 350;
+
+    return angle;
+}
+
+UVector RotationHelper::NormalizeAngles(UVector angles)
+{
+    angles.x = NormalizeAngle(angles.x);
+    angles.y = NormalizeAngle(angles.y);
+    angles.z = NormalizeAngle(angles.z);
+
+    return angles;
 }

@@ -158,3 +158,8 @@ void settings_widget::on_spbAnheroDelay_valueChanged(int arg1)
 {
     loewctconfig.setValue("anheroDelay", arg1);
 }
+
+void settings_widget::on_spbMaxDups_valueChanged(int arg1)
+{
+    loewctconfig.setValue("maxPacketDups", arg1);
+}

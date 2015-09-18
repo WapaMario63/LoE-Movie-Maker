@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>438</width>
-    <height>645</height>
+    <height>710</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -36,7 +36,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string notr="true">LoE Movie Maker v1.0</string>
+   <string notr="true">LoE Movie Maker v1.1</string>
   </property>
   <property name="windowIcon">
    <iconset resource="resources.qrc">
@@ -75,6 +75,9 @@
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(255, 0, 255);</string>
+   </property>
    <property name="text">
     <string>Launch LoE</string>
    </property>
@@ -88,7 +91,7 @@
     <rect>
      <x>10</x>
      <y>327</y>
-     <width>421</width>
+     <width>131</width>
      <height>23</height>
     </rect>
    </property>
@@ -101,10 +104,10 @@
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
    <property name="text">
-    <string>[LoEWCT] and LoE Movie Maker Settings</string>
+    <string>[LoEWCT]  Settings</string>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="resources.qrc">
      <normaloff>:/btnIcons/icons/wrench_orange.png</normaloff>:/btnIcons/icons/wrench_orange.png</iconset>
    </property>
   </widget>
@@ -127,11 +130,11 @@
      <x>10</x>
      <y>430</y>
      <width>421</width>
-     <height>211</height>
+     <height>271</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tabPlayerControls">
     <attribute name="title">
@@ -141,7 +144,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>40</y>
+       <y>10</y>
        <width>311</width>
        <height>22</height>
       </rect>
@@ -226,7 +229,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>130</y>
+       <y>100</y>
        <width>131</width>
        <height>23</height>
       </rect>
@@ -239,7 +242,7 @@
      <property name="geometry">
       <rect>
        <x>330</x>
-       <y>40</y>
+       <y>10</y>
        <width>81</width>
        <height>23</height>
       </rect>
@@ -252,7 +255,7 @@
      <property name="geometry">
       <rect>
        <x>172</x>
-       <y>70</y>
+       <y>40</y>
        <width>151</width>
        <height>20</height>
       </rect>
@@ -271,7 +274,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>160</y>
+       <y>130</y>
        <width>401</width>
        <height>20</height>
       </rect>
@@ -305,7 +308,7 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>130</y>
+       <y>100</y>
        <width>121</width>
        <height>23</height>
       </rect>
@@ -318,7 +321,7 @@
      <property name="geometry">
       <rect>
        <x>110</x>
-       <y>100</y>
+       <y>70</y>
        <width>101</width>
        <height>20</height>
       </rect>
@@ -334,7 +337,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>70</y>
+       <y>40</y>
        <width>151</width>
        <height>20</height>
       </rect>
@@ -350,7 +353,7 @@
      <property name="geometry">
       <rect>
        <x>330</x>
-       <y>100</y>
+       <y>70</y>
        <width>81</width>
        <height>23</height>
       </rect>
@@ -363,7 +366,7 @@
      <property name="geometry">
       <rect>
        <x>330</x>
-       <y>70</y>
+       <y>40</y>
        <width>81</width>
        <height>23</height>
       </rect>
@@ -376,7 +379,7 @@
      <property name="geometry">
       <rect>
        <x>280</x>
-       <y>130</y>
+       <y>100</y>
        <width>131</width>
        <height>23</height>
       </rect>
@@ -389,7 +392,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>100</y>
+       <y>70</y>
        <width>91</width>
        <height>20</height>
       </rect>
@@ -405,7 +408,7 @@
      <property name="geometry">
       <rect>
        <x>220</x>
-       <y>100</y>
+       <y>70</y>
        <width>101</width>
        <height>20</height>
       </rect>
@@ -415,19 +418,6 @@
      </property>
      <property name="clearButtonEnabled">
       <bool>false</bool>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>401</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Instantiate/Clone Player</string>
      </property>
     </widget>
    </widget>
@@ -491,6 +481,50 @@
      </property>
     </widget>
    </widget>
+   <widget class="QWidget" name="tabCloning">
+    <attribute name="title">
+     <string>Cloning</string>
+    </attribute>
+    <widget class="QPushButton" name="pushButton">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>140</y>
+       <width>401</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Clone Set Player's Pony</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>401</width>
+       <height>111</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;More Cloning features coming soon! For now you can use this textbox to fill in&lt;br/&gt;arguments that would normaly be used with the 'instantiate' server command.&lt;br/&gt;Otherwise, leave the box empty and click the button to clone your pony on &lt;br/&gt;your position.&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;Has to be in the exact order presented:&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;[key] [viewId] [ownerId] [x] [y] [z] [rx] [ry] [rz] [rw]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>110</y>
+       <width>401</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>[key] [viewId] [ownerId] [x] [y] [z] [rx] [ry] [rz] [rw]</string>
+     </property>
+    </widget>
+   </widget>
    <widget class="QWidget" name="tabAdvanced">
     <attribute name="title">
      <string>Help</string>
@@ -501,11 +535,11 @@
        <x>10</x>
        <y>10</y>
        <width>401</width>
-       <height>161</height>
+       <height>151</height>
       </rect>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head&gt;&lt;style&gt;p{margin:0px; padding:0px;}&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;General Help in Settings.&lt;/p&gt;&lt;hr/&gt;&lt;p&gt;Inside the tools folder there are the following modding tools:&lt;/p&gt;&lt;p&gt;1. DisUnity - Extracts LoE's .assets file entirely. Requires Java.&lt;/p&gt;&lt;p&gt;2. Unity Assset Editor - Modfiy LoE's .assets files to make resource packs.&lt;/p&gt;&lt;p&gt;3. .NET Reflector - Let's you open .NET/Mono Assemblies (.dll) to modify or&lt;/p&gt;&lt;p&gt;decompile into a Visual Studio project or just plain .cs files.&lt;/p&gt;&lt;p&gt;4. NPC Creator - Beta Javascript based NPC Creator.&lt;/p&gt;&lt;br/&gt;&lt;p&gt;Remember to use the KeyGen OFFLINE (without internet) for .NET Reflector!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head&gt;&lt;style&gt;p{margin:0px; padding:0px;}&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;General Help in Settings.&lt;/p&gt;&lt;hr/&gt;&lt;p&gt;Inside the tools folder there are the following modding tools:&lt;/p&gt;&lt;p&gt;1. DisUnity - Extracts LoE's .assets files entirely. Requires Java.&lt;/p&gt;&lt;p&gt;2. Unity Assset Editor - Modfiy LoE's .assets files to make resource packs.&lt;/p&gt;&lt;p&gt;3. .NET Reflector - Let's you open .NET/Mono Assemblies (.dll) to modify or&lt;/p&gt;&lt;p&gt;decompile into a Visual Studio project or just plain .cs files.&lt;/p&gt;&lt;p&gt;4. NPC Creator - Beta Javascript based NPC Creator. (deprecated)&lt;/p&gt;&lt;br/&gt;&lt;p&gt;Remember to use the KeyGen OFFLINE (without internet) for .NET Reflector!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -561,7 +595,7 @@
      <x>210</x>
      <y>240</y>
      <width>20</width>
-     <height>71</height>
+     <height>81</height>
     </rect>
    </property>
    <property name="orientation">
@@ -609,8 +643,15 @@
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(255, 170, 0);</string>
+   </property>
    <property name="text">
     <string>Stop Server</string>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/btnIcons/icons/server.png</normaloff>:/btnIcons/icons/server.png</iconset>
    </property>
   </widget>
   <widget class="QComboBox" name="cbxServerSelector">
@@ -647,6 +688,92 @@
    </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>327</y>
+     <width>131</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>ForbiddenCursor</cursorShape>
+   </property>
+   <property name="text">
+    <string>Demo Manager (Soon!)</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnAboutQt">
+   <property name="geometry">
+    <rect>
+     <x>7</x>
+     <y>29</y>
+     <width>91</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(0, 170, 0);</string>
+   </property>
+   <property name="text">
+    <string>About Qt</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnAbout">
+   <property name="geometry">
+    <rect>
+     <x>7</x>
+     <y>4</y>
+     <width>91</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(255, 0, 255);</string>
+   </property>
+   <property name="text">
+    <string>About LoEMM</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnWebsiteLink">
+   <property name="geometry">
+    <rect>
+     <x>7</x>
+     <y>54</y>
+     <width>91</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(0, 85, 255);</string>
+   </property>
+   <property name="text">
+    <string>LoEWCT.tk</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnNPCManager">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>155</x>
+     <y>327</y>
+     <width>131</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>ForbiddenCursor</cursorShape>
+   </property>
+   <property name="text">
+    <string>NPC Manager</string>
    </property>
   </widget>
  </widget>

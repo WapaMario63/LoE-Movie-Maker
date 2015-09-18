@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>gameFiles/ChatFilter.txt</file>
+        <file>gameFiles/data/ChatFilterStrict.txt</file>
         <file>gameFiles/data/Abilities.xml</file>
         <file>gameFiles/data/Atlas.png</file>
         <file>gameFiles/data/CutieMarks.xml</file>

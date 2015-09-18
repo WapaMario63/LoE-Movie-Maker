@@ -34,7 +34,7 @@ public:
 public slots:
     void doSync();
 
-private:
+public:
     QTimer* syncTimer;
 };
 

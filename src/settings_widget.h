@@ -55,6 +55,8 @@ private slots:
 
     void on_spbAnheroDelay_valueChanged(int arg1);
 
+    void on_spbMaxDups_valueChanged(int arg1);
+
 private:
     Ui::settings_widget *ui;
 };

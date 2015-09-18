@@ -7,7 +7,7 @@ class ContentManager : QObject
 {
     Q_OBJECT
 public:
-    QStringList contentnames;
+    //QStringList contentnames;
 
 
 public:

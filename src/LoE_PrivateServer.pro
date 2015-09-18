@@ -8,6 +8,7 @@ QT       += core gui network widgets multimedia
 
 TARGET = LoE_Movie_Maker
 TEMPLATE = app
+VERSION = 0.0.1
 
 win32:RC_FILE = loeIcon.rc
 
@@ -51,7 +52,10 @@ SOURCES += main.cpp \
     shops.cpp \
     permissions.cpp \
     gamemode.cpp \
-    CustomContentManager.cpp
+    CustomContentManager.cpp \
+    moderation.cpp \
+    demo.cpp \
+    NpcManager.cpp
 
 HEADERS  += widget.h \
 	character.h \
@@ -91,12 +95,17 @@ HEADERS  += widget.h \
     shops.h \
     permissions.h \
     gamemode.h \
-    CustomContentManager.h
+    CustomContentManager.h \
+    moderation.h \
+    demo.h \
+    NpcManager.h
 
 FORMS    += widget.ui \
     settings_widget.ui \
     form.ui \
-    modmanager.ui
+    modmanager.ui \
+    demo.ui \
+    NpcManager.ui
 
 # include coreservices (required for timestamps) only on mac
 macx {
@@ -107,4 +116,5 @@ macx {
 CONFIG += c++11
 
 RESOURCES += \
-    resources.qrc
+    resources.qrc \
+    data.qrc

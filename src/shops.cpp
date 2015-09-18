@@ -9,4 +9,6 @@ QMap<uint32_t, uint32_t> parseShopsXml(QByteArray data)
     QMap<uint32_t, uint32_t> map;
 
     // Parsing this is a work in progress.
+
+    return map;
 }

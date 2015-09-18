@@ -21,8 +21,11 @@
     </qresource>
     <qresource prefix="/misc">
         <file>icons/alert_icon.png</file>
-        <file>Thumb.png</file>
         <file>about.html</file>
         <file>loewct_logo1.fw.png</file>
+        <file>Thumb.png</file>
+    </qresource>
+    <qresource prefix="/winstyle">
+        <file>dialog_bg.png</file>
     </qresource>
 </RCC>

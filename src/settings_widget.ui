@@ -270,7 +270,7 @@
    <string>[LoEWCT] Help and Settings</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="resources.qrc">
     <normaloff>:/btnIcons/icons/wrench_orange.png</normaloff>:/btnIcons/icons/wrench_orange.png</iconset>
   </property>
   <property name="toolTip">
@@ -281,7 +281,7 @@
   </property>
   <widget class="QWidget" name="main">
    <attribute name="icon">
-    <iconset>
+    <iconset resource="resources.qrc">
      <normaloff>:/btnIcons/icons/application_edit.png</normaloff>:/btnIcons/icons/application_edit.png</iconset>
    </attribute>
    <attribute name="title">
@@ -379,7 +379,7 @@
        <x>10</x>
        <y>20</y>
        <width>471</width>
-       <height>111</height>
+       <height>101</height>
       </rect>
      </property>
      <layout class="QFormLayout" name="formLayout_2">
@@ -549,24 +549,67 @@
    <attribute name="title">
     <string>LoE Movie Maker</string>
    </attribute>
-   <widget class="QWidget" name="layoutWidget">
+   <widget class="QLabel" name="label_24">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>10</y>
       <width>491</width>
-      <height>22</height>
+      <height>20</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="text">
+     <string>One small change and it will save automaticly.</string>
+    </property>
+    <property name="scaledContents">
+     <bool>false</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_25">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>100</y>
+      <width>491</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;!anhero delay changes respawn time in miliseconds, useful when you want your pony to stay in&lt;br/&gt;the death position longer than usual for recording.&lt;/p&gt;
+&lt;p&gt;Packet Dups are messages sent from the client to the server, this mainly associates with skills. Going&lt;br/&gt; over the max dups will kick you from the server for lagging it. Change this if your scene requires&lt;br/&gt; spamming a skill, like doing the 'sparkling' effect which is teleporting while having yourself selected.&lt;br/&gt;Keep in mind that if you have other players on the server, they might lag.&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>491</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <layout class="QFormLayout" name="formLayout_4">
+     <item row="0" column="0">
       <widget class="QLabel" name="label_22">
        <property name="text">
         <string>!anhero Delay:</string>
        </property>
       </widget>
      </item>
-     <item>
+     <item row="0" column="1">
       <widget class="QSpinBox" name="spbAnheroDelay">
        <property name="suffix">
         <string>ms</string>
@@ -579,12 +622,32 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_23">
+       <property name="text">
+        <string>Maximun Packet Dups                                               </string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QSpinBox" name="spbMaxDups">
+       <property name="suffix">
+        <string> dups</string>
+       </property>
+       <property name="maximum">
+        <number>99999999</number>
+       </property>
+       <property name="value">
+        <number>1000</number>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
   </widget>
   <widget class="QWidget" name="tab_2">
    <attribute name="icon">
-    <iconset>
+    <iconset resource="resources.qrc">
      <normaloff>:/btnIcons/icons/server_edit.png</normaloff>:/btnIcons/icons/server_edit.png</iconset>
    </attribute>
    <attribute name="title">
@@ -933,7 +996,7 @@
   </widget>
   <widget class="QWidget" name="help">
    <attribute name="icon">
-    <iconset>
+    <iconset resource="resources.qrc">
      <normaloff>:/btnIcons/icons/help.png</normaloff>:/btnIcons/icons/help.png</iconset>
    </attribute>
    <attribute name="title">
@@ -1033,8 +1096,8 @@ p, li { white-space: pre-wrap; }
   </widget>
   <widget class="QWidget" name="tab">
    <attribute name="icon">
-    <iconset>
-     <normaloff>:/btnIcons/icons/group_go.png</normaloff>:/btnIcons/icons/group_go.png</iconset>
+    <iconset resource="resources.qrc">
+     <normaloff>:/btnIcons/icons/group.png</normaloff>:/btnIcons/icons/group.png</iconset>
    </attribute>
    <attribute name="title">
     <string>About</string>
@@ -1056,6 +1119,8 @@ p, li { white-space: pre-wrap; }
    </widget>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

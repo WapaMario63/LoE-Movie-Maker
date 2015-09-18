@@ -13,7 +13,7 @@
 #include "settings.h"
 #include "form.h"
 
-#if defined _WIN32 || defined WIN32
+#if PONY_PLATFORM == PLAT_WIN32 || PONY_PLATFORM == PLAT_WIN64
 #include <windows.h>
 #else
 #include <sys/time.h>
@@ -117,9 +117,9 @@ void Widget::startServer()
 
     /// Init servers
     tcpClientsList.clear();
-#if defined _WIN32 || defined WIN32
+#if PONY_PLATFORM == PLAT_WIN32 || PONY_PLATFORM == PLAT_WIN64
     startTimestamp = GetTickCount();
-#elif __APPLE__
+#elif PONY_PLATFORM == PLAT_MACOSX
     timeval time;
     gettimeofday(&time, NULL);
     startTimestamp = (time.tv_sec * 1000) + (time.tv_usec / 1000);
@@ -386,7 +386,7 @@ void Widget::startServer()
         connect(tcpServer, SIGNAL(newConnection()), this, SLOT(tcpConnectClient()));
     if (enableGameServer)
     {
-        connect(udpSocket, SIGNAL(readyRead()),this, SLOT(udpProcessPendingDatagrams()));
+        connect(udpSocket, SIGNAL(readyRead()), this, SLOT(udpProcessPendingDatagrams()));
         connect(pingTimer, SIGNAL(timeout()), this, SLOT(checkPingTimeouts()));
     }
 }
@@ -477,7 +477,7 @@ Widget::~Widget()
             if (ponies[i].ponyData == player->pony.ponyData)
                 ponies[i] = player->pony;
         Player::savePonies(player, ponies);
-        Player::savePlayerData(player, ponies);
+        //Player::savePlayerData(player, ponies);
         player->pony.saveInventory();
         player->pony.saveQuests();
 
@@ -505,7 +505,7 @@ Widget::~Widget()
     delete cin_notifier;
 
     // We freed everything that was important, so don't waste time in atexits
-#if defined WIN32 || defined _WIN32 || defined __APPLE__
+#if PONY_PLATFORM == PLAT_WIN32 || PONY_PLATFORM == PLAT_MACOSX
     _exit(EXIT_SUCCESS);
 #else
     quick_exit(EXIT_SUCCESS);

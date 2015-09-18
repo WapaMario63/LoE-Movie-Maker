@@ -7,49 +7,64 @@
 #include "form.h"
 #include <QFile>
 
+void Quest::exception(QString msg)
+{
+    QString QSE = "QuestScript Exception \n---------------------\n";
+    QByteArray data(1,0);
+    data[0] = 0x7f;
+    data += stringToData(QSE+msg);
+
+    sendMessage(owner, MsgUserReliableOrdered4, data);
+}
+
 void QuestFunction::launchFunction(function func, QString args, Player *player)
 {
-    QList<QString> arg = args.split(" , ");
+    Quest* q;
 
-    switch (func)
+    if (func == q_sendChatMessage)
     {
-    case q_sendChatMessage:         sendChatMessage(player, arg[0], "[QUEST]", ChatGeneral);
-    case q_sendAnnouncementMessage: sendAnnouncementMessage(player, arg[0], arg[1].toFloat());
-    case q_teleportPlayer:          sendMove(player, arg[0].toFloat(), arg[1].toFloat(), arg[2].toFloat());
-    case q_teleportPlayerScene:     sendLoadSceneRPC(player, arg[0]);
-    case q_spawnInstantiate:        sendNetviewInstantiate(player);
-    case q_logToServer:             win.logMessage("[INFO] "+arg[0]);
-    case q_sendMessageBox:
-        QByteArray data(1,0);
-        data[0] = 0x7F;
+        sendChatMessage(player, args, "[QUEST]", ChatGeneral);
+    }
+    else if (func == q_sendAnnouncementMessage)
+    {
+        QStringList arg = args.split('|');
 
-        data += stringToData(arg[0]);
-        sendMessage(player, MsgUserReliableOrdered4, data);
-    case q_spawnNpc:
-        unsigned nQuest = 0;
-        QDir npcsDir("/data/npcs/");
-        QStringList files = npcsDir.entryList(QDir::Files);
-        for (int i=0; files.size(); i++, nQuest++)
+        if (arg.size() < 2)
         {
-            QFile file(arg[0]);
-            if (file.exists())
-            {
-                Quest *quest = new Quest("/data/npcs/"+arg[0], player);
-                win.quests << *quest;
-                win.npcs << quest->npc;
-
-                win.logMessage("[INFO] Loaded NPC called by Another NPC. Amount: "+QString().setNum(nQuest));
-            }
-            else
-            {
-                QByteArray data(1,0);
-                data[0] = 0x7F;
-
-                data += stringToData("ERROR \n---------------\nCould not load an NPC called by the NPC you are speaking to! \nERROR LOG\n File '"+arg[0]+"' not found. Aborting request.");
-                sendMessage(player, MsgUserReliableOrdered4, data);
-                win.logMessage("[ERROR] Could not load NPC called by another NPC. File is: +"+arg[0]);
-            }
+            q->exception("Function sendAnnouncementMessage, not enough arguments.");
         }
+        else
+        {
+            sendAnnouncementMessage(player, arg[1], arg[0].toFloat());
+        }
+    }
+    else if (func == q_teleportPlayer)
+    {
+        QStringList arg2 = args.split(',');
+        if (arg2.size() < 3)
+        {
+            q->exception("Function teleportPlayer, not enough arguments.");
+        }
+        else
+        {
+            sendMove(player, arg2[0].toFloat(), arg2[1].toFloat(), arg2[2].toFloat());
+        }
+    }
+    else if (func == q_teleportPlayerScene)
+    {
+        sendLoadSceneRPC(player, args);
+    }
+    else if (func == q_spawnInstantiate)
+    {
+        sendNetviewInstantiate(player);
+    }
+    else if (func == q_logToServer)
+    {
+        win.logMessage("[INFO] "+args);
+    }
+    else
+    {
+        win.logMessage("[ERROR][QUESTSCRIPT] Unknown function called.");
     }
 }
 
@@ -170,12 +185,13 @@ Quest::Quest(QString path, Player *Owner)
                     item.id = itemId;
                     item.index = wearablePositionsToSlot(win.wearablePositionsMap[itemId]);
                     npc->worn << item;
+
                 }
             }
             else if (line[0] == "shop")
               {
                 // -> Jesus, I placed a 1 instead of an i in i<lines.size(); inside the for statement.
-                // --> Ladies and Gentlemen, the biggest derp of all of [LoEWCT]'s development. For now. lel
+                // --> Ladies and Gentlemen, the biggest derp of all of [LoEWCT]'s development. For now.
                 for (int i=1; i<line.size(); i++)
                   {
                     bool ok;
@@ -281,12 +297,14 @@ bool Quest::doCommand(int commandEip)
     {
         if (command.size() != 2)
         {
+            exception("command variable 'goto' takes exactly one argument.");
             logError("goto takes exactly one argument");
             return false;
         }
         int newEip = findLabel(command[1]);
         if (newEip == -1)
         {
+            exception("Label '"+command[1]+"' not found.");
             logError("label not found");
             return false;
         }
@@ -339,8 +357,14 @@ bool Quest::doCommand(int commandEip)
 
         // Replace special variables
         msg.replace("{PLAYERNAME}", owner->pony.name);
+        msg.replace("{PLAYER_BITS}", QString().setNum(owner->pony.nBits));
+        msg.replace("{PLAYER_HEALTH}", QString().setNum(owner->pony.health));
         for (QString& s : answers)
+        {
             s.replace("{PLAYERNAME}", owner->pony.name);
+            s.replace("{PLAYER_BITS}", QString().setNum(owner->pony.nBits));
+            s.replace("{PLAYER_HEALTH}", QString().setNum(owner->pony.health));
+        }
 
         // Send
         sendBeginDialog(owner);
@@ -643,19 +667,50 @@ bool Quest::doCommand(int commandEip)
     }
     else if (command[0] == "runFunction")
     {
+        QString msg, npcName;
+
+        if (command.size() >= 3)
+        {
+            msg = concatAfter(command, 2);
+            npcName = npc->name;
+        }
+        else
+        {
+            logError("runFunction takes 3 arguments: runFunction <Server Function|Lua Function> [function argument");
+            return false;
+        }
+
+        // Replace special variables
+        msg.replace("{PLAYERNAME}", owner->pony.name);
+        msg.replace("{PLAYER_BITS}", QString().setNum(owner->pony.nBits));
+        msg.replace("{PLAYER_HEALTH}", QString().setNum(owner->pony.health));
+
         if (command[1] == "sendChatMessage")
         {
-            QString msg = command[2];
             QuestFunction::launchFunction(QuestFunction::q_sendChatMessage, msg, owner);
         }
         else if (command[1] == "sendAnnouncement")
         {
-            QString msg = command[2];
             QuestFunction::launchFunction(QuestFunction::q_sendAnnouncementMessage, msg, owner);
+        }
+        /*else if (command[1] == "teleportToPosition")
+        {
+            QuestFunction::launchFunction(QuestFunction::q_teleportPlayer, msg, owner);
+            eip--;
+        }*/
+        else if (command[1] == "teleportToScene")
+        {
+            QuestFunction::launchFunction(QuestFunction::q_teleportPlayerScene, msg, owner);
+        }
+        else
+        {
+            exception("Unknown function: "+command[1]);
+            sendEndDialog(owner);
         }
     }
     else
     {
+        exception("'"+command[0]+"' was not declared or an unknown command variable.");
         logError("unknown command : "+command[0]);
         return false;
     }

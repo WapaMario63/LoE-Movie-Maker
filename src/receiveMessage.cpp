@@ -20,7 +20,7 @@ void receiveMessage(Player* player)
     QString serverPrefix = loewctconfig.value("serverPrefix", "[LoEWCT]").toString();
     bool enablePVP = loewctconfig.value("pvp", true).toBool();
     bool playerJoined = loewctconfig.value("playerJoinedMsg", true).toBool();
-
+    int maxPacketDups = loewctconfig.value("maxPacketDups", 1000).toInt();
 
     QByteArray msg = *(player->receivedDatas);
     int msgSize=5 + (((unsigned char)msg[3]) + (((unsigned char)msg[4]) << 8))/8;
@@ -65,7 +65,7 @@ void receiveMessage(Player* player)
                                +") from "+QString().setNum(player->pony.netviewId));
                 win.logMessage("[INFO] UDP: Message was : "+QString(player->receivedDatas->left(msgSize).toHex().data()));
                 player->nReceivedDups++;
-                if (player->nReceivedDups >= MAX_PACKET_DUPS) // Kick the player if he's infinite-looping on us
+                if (player->nReceivedDups >= maxPacketDups) // Kick the player if he's infinite-looping on us
                 {
                     win.logMessage(QString("[INFO] UDP: Kicking "+QString().setNum(player->pony.netviewId)+" : Too many packet dups."));
                     sendMessage(player,MsgDisconnect, "Kicked by Server \nReason \n-------------------------------\n Lagging the server (too many packet dups)");
@@ -106,8 +106,8 @@ void receiveMessage(Player* player)
         }
         else
         {
-            if (player->nReceivedDups > 0) // If he stopped sending dups, forgive him slowly.
-                player->nReceivedDups--;
+            if (player->nReceivedDups > 0) // If he stopped sending dups, remove 10 dups at a time slowly
+                player->nReceivedDups -= 10; // old: player->nReceivedDups--;
             //win.logMessage("UDP: Received message (="+QString().setNum(seq)
             //               +") from "+QString().setNum(player->pony.netviewId));
             player->udpRecvSequenceNumbers[channel] = seq;
@@ -276,7 +276,7 @@ void receiveMessage(Player* player)
             player->pony = pony;
 
             Player::savePonies(player, ponies);
-            Player::savePlayerData(player, ponies);
+            //Player::savePlayerData(player, ponies);
 
             player->pony.loadQuests();
             if (!player->pony.loadInventory()) // Create a default inventory if we can't find one saved
@@ -370,7 +370,7 @@ void receiveMessage(Player* player)
             ponies.removeAt(id);
 
             Player::savePonies(player,ponies);
-            Player::savePlayerData(player, ponies);
+            //Player::savePlayerData(player, ponies);
             sendPonies(player);
         }
         else if ((unsigned char)msg[0]==MsgUserReliableOrdered12 && (unsigned char)msg[7]==0xCA) // Animation

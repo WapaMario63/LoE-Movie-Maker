@@ -1,4 +1,3 @@
-
 #include <QtWidgets/QApplication>
 #include "widget.h"
 #include <QTranslator>
@@ -10,6 +9,8 @@
 #include <iostream>
 #include "lib.h"
 #include "form.h"
+#include <demo.h>
+#include <QMessageBox>
 
 //#if IS_APP
 int argc=0;
@@ -19,6 +20,7 @@ Widget win;
 //chat_widget cwin;
 settings_widget swin;
 Form lwin;
+Demo dem;
 QTextStream cout(stdout);
 QTextStream cin(stdin);
 

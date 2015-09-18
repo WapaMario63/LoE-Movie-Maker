@@ -3,11 +3,42 @@
 
 #include <QString>
 
+/*
+ ** We getting some PoneNgine stuff in here! **
+
+ * Removed mobile devices and WinRT, because there is no point for a server on those. *
+*/
+/// BEGIN ponesettings.h from PoneNgine
+// Defined all possible platforms
+#define PLAT_WIN32 0
+#define PLAT_WIN64 1
+#define PLAT_MACOSX 2
+#define PLAT_UNIX 3
+
+// Yes we are calling almost everything with Pony at the beginning
+// The engine is named after pony, so, why not?
+
+#if defined(WIN32) || defined(_WIN32)
+#define PONY_PLATFORM PLAT_WIN32
+#elif defined(_WIN64)
+#define PONY_PLATFORM PLAT_WIN64
+#elif defined(__APPLE__)
+#define PONY_PLATFORM PLAT_MACOSX
+#elif defined(__WINRT__)
+#else
+#define PONY_PLATFORM PLAT_UNIX
+#endif
+
+/// END ponesettings.h from PoneNgine
+
 #define DEFAULT_SYNC_INTERVAL 250
 #define IF_AUGUST_BUILD false
 #define IF_BABSCON_BUILD true
-#define LOEWCT_VERSION "v0.6.0"
+#define IF_BABS15_BUILD false
+#define LOEWCT_VERSION "v0.6.1"
 #define MAX_PACKET_DUPS 1000
+
+#define BABSCON15
 
 /* LoE Server Config */
 
