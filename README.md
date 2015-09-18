@@ -1,5 +1,8 @@
 ## LoE-Movie-Maker
-A [LoEWCT] Server made for the making of Legends of Equestria Machinima
+
+This branch is for attempting at making [LoEWCT] support newer LoE Clients. I will really need help on this as I have barely any knowledge of how PNet2 works, since their documentation is rather, lacking. 
+
+Why use LMM (LoE Movie Maker) for this? Well, it's the most updated [LoEWCT] version, plus I have moved away from the server aspects in favor for LMM a long time ago due to mlkj leaving the original project, so there is no turning back anymore.
 
 ## Screenshot
 <img src="http://i.imgur.com/t1LbU0Z.jpg"/>
