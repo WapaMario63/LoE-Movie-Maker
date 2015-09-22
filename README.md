@@ -1,5 +1,7 @@
-## LoE-Movie-Maker
-A [LoEWCT] Server made for the making of Legends of Equestria Machinima
+## LoE Movie Maker ([LoEWCT], LoE Private Server)
+A [LoEWCT] Server (LoE Private Server) made for the making of Legends of Equestria Machinima
+
+If you want to help [LoEWCT] to work on newer LoE clients, please read issue [#1](https://github.com/WapaMario63/LoE-Movie-Maker/issues/1)
 
 ## Screenshot
 <img src="http://i.imgur.com/t1LbU0Z.jpg"/>
