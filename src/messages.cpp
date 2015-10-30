@@ -625,7 +625,7 @@ void sendChatMessage(Player* player, QString message, QString author, quint8 cha
     if (ServerVersion::isAugust) data += stringToData(author);
     data += stringToData(message);
     data += idAndAccess;
-    if (ServerVersion::isAugust)
+    if (ServerVersion::isAugust))
     {
         data += uint32ToData(0); // Datetime
         data += uint32ToData(0); // Datetime
@@ -641,8 +641,23 @@ void sendMove(Player* player, float x, float y, float z)
     data += floatToData(x);
     data += floatToData(y);
     data += floatToData(z);
-    win.logMessage(QString("[INFO] UDP: Moving character"));
+    win.logMessage(QString("[INFO] UDP: Moving player: "+player->pony.name));
     sendMessage(player,MsgUserReliableOrdered4, data);
+}
+
+// Foundation only! May not work until I find the correct RPC ID!
+void sendRotate(Player* player, float x, float y, float z, float w)
+{
+    QByteArray data(1,0);
+    data[0] = 0xCE; // Request RPC Number
+    data += floatToData(x);
+    data += floatToData(y);
+    data += floatToData(z);
+    data += floatToData(w);
+
+    win.logMessage("[INFO] UDP: Rotating player: "+player->pony.name);
+
+    sendMessage(player, MsgUserReliableOrdered4, data);
 }
 
 void sendBeginDialog(Player* player)
