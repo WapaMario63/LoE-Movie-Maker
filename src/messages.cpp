@@ -625,7 +625,7 @@ void sendChatMessage(Player* player, QString message, QString author, quint8 cha
     if (ServerVersion::isAugust) data += stringToData(author);
     data += stringToData(message);
     data += idAndAccess;
-    if (ServerVersion::isAugust))
+    if (ServerVersion::isAugust)
     {
         data += uint32ToData(0); // Datetime
         data += uint32ToData(0); // Datetime
@@ -646,14 +646,14 @@ void sendMove(Player* player, float x, float y, float z)
 }
 
 // Foundation only! May not work until I find the correct RPC ID!
-void sendRotate(Player* player, float x, float y, float z, float w)
+void sendRotate(Player* player, UQuaternion rot)
 {
     QByteArray data(1,0);
     data[0] = 0xCE; // Request RPC Number
-    data += floatToData(x);
-    data += floatToData(y);
-    data += floatToData(z);
-    data += floatToData(w);
+    data += floatToData(rot.x);
+    data += floatToData(rot.y);
+    data += floatToData(rot.z);
+    data += floatToData(rot.z);
 
     win.logMessage("[INFO] UDP: Rotating player: "+player->pony.name);
 

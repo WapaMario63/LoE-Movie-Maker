@@ -40,6 +40,10 @@
 
 #define BABSCON15
 
+
+#define FUNCTION_SELECT_ALL_PLAYERS for (int PLR=0; PLR<win.udpPlayers.size(); PLR++)
+#define VAR_ALL_PLAYERS win.udpPlayers[PLR]
+
 /* LoE Server Config */
 
 namespace Settings

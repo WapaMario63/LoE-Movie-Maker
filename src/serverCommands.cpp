@@ -8,6 +8,7 @@
 #include "loewct_main.h"
 #include "form.h"
 
+#include <QtMath>
 
 void Form::cmdStopServer()
 {
@@ -27,11 +28,11 @@ void Form::cmdStartServer()
 }
 void Form::cmdShowHelp()
 {
-    logMessage(QString("[INFO] Here is a list of normal commands: clear, stop, help, listTopPlayers, tp <player> <player>, setPlayer, listPlayers, move <x> <y> <z>, load <map>, getPos, getRot, error <message>, kick. \nFor debug commands use helpDebug."));
+    win.logMessage(QString("[INFO] Here is a list of normal commands: clear, stop, help, listTopPlayers, tp <player> <player>, setPlayer, listPlayers, move <x> <y> <z>, load <map>, getPos, getRot, error <message>, kick. \nFor debug commands use helpDebug."));
 }
 void Form::cmdShowDebugHelp()
 {
-    logMessage(QString("[INFO] Debug commands, don't mess with these much: listVortexes, sync, dbgStressLoad, getPonyData, sendPonies, setPlayerId, reloadNpc, sendPonyData, setStat, setMaxStat, instantiate, beginDialog, endDialog, setDialogMsg, setDialogOptions"));
+    win.logMessage(QString("[INFO] Debug commands, don't mess with these much: listVortexes, sync, dbgStressLoad, getPonyData, sendPonies, setPlayerId, reloadNpc, sendPonyData, setStat, setMaxStat, instantiate, beginDialog, endDialog, setDialogMsg, setDialogOptions"));
 }
 void Form::cmdListTcpPlayers()
 {
@@ -47,6 +48,451 @@ void Form::cmdSetPlayer()
     win.cmdPeer = win.udpPlayers[0];
     QString peerName = win.cmdPeer->IP + ":" + QString().setNum(win.cmdPeer->port);
     win.logMessage(QString("[INFO] UDP: Player has been set to ").append(peerName));
+}
+
+void Form::cmdSetPlayer(quint16 id)
+{
+    FUNCTION_SELECT_ALL_PLAYERS
+    {
+        if (VAR_ALL_PLAYERS->pony.id == id)
+        {
+            win.cmdPeer = Player::findPlayer(win.udpPlayers, VAR_ALL_PLAYERS->IP, VAR_ALL_PLAYERS->port);
+            win.logMessage(QString("[INFO] UDP: Player set to "+VAR_ALL_PLAYERS->pony.name));
+        }
+        else
+        {
+            win.logMessage(QString("[ERROR] UDP: Player not found (ID ").append(args[0]).append(")"));
+        }
+    }
+}
+
+void Form::cmdSetPlayer(QString IP, quint16 port)
+{
+    FUNCTION_SELECT_ALL_PLAYERS
+    {
+        if (VAR_ALL_PLAYERS->IP == IP && VAR_ALL_PLAYERS->port)
+        {
+            win.cmdPeer = Player::findPlayer(win.udpPlayers, IP, port);
+            win.logMessage(QString("[INFO] UDP: Player set to "+VAR_ALL_PLAYERS->pony.name));
+        }
+        else
+        {
+            win.logMessage(QString("[ERROR] UDP: Player not found (").append(IP).append(":").append(port).append(")"));
+        }
+    }
+}
+
+void Form::cmdListPlayers()
+{
+    FUNCTION_SELECT_ALL_PLAYERS
+    {
+        for (int i=0; i<win.udpPlayers.size();i++)
+            win.logMessage(QString().setNum(VAR_ALL_PLAYERS->pony.id)
+                           //+"("+QString().setNum(VAR_ALL_PLAYERS->pony.netviewId)+")"
+                           +" | "+VAR_ALL_PLAYERS->pony.name
+                           +" | "+VAR_ALL_PLAYERS->IP
+                           +":"+QString().setNum(VAR_ALL_PLAYERS->port)
+                           +" | "+QString().setNum((int)timestampNow()-VAR_ALL_PLAYERS->lastPingTime)+"s");
+    }
+
+    /*for (const Player& player : win.udpPlayers)
+    {
+        win.logMessage(QString().setNum(player->pony.id)
+                       //+"("+QString().setNum(VAR_ALL_PLAYERS->pony.netviewId)+")"
+                       +" | "+player->pony.name
+                       +" | "+player->IP
+                       +":"+QString().setNum(player->port)
+                       +" | "+QString().setNum((int)timestampNow()-player->lastPingTime)+"s");
+    }*/
+}
+
+void Form::cmdListPlayers(QString scenename)
+{
+    Scene* scene = findScene(scenename);
+    if (scene->name.isEmpty())
+        win.logMessage("[ERROR] Scene Not found");
+    else
+    {
+        for (int j=0; j<scene->players.size(); j++)
+        {
+            win.logMessage(win.udpPlayers[j]->IP
+                           +":"+QString().setNum(win.udpPlayers[j]->port)
+                           +" "+QString().setNum((int)timestampNow()-win.udpPlayers[j]->lastPingTime)+"s");
+        }
+
+    }
+}
+
+void Form::cmdListVortexes()
+{
+    for (int i=0; i<win.scenes.size(); i++)
+    {
+        win.logMessage("[INFO] Scene "+win.scenes[i].name);
+        for (int j=0; j<win.scenes[i].vortexes.size(); j++)
+            win.logMessage("[INFO] Vortex "+QString().setNum(win.scenes[i].vortexes[j].id)
+                           +" to "+win.scenes[i].vortexes[j].destName+" "
+                           +QString().setNum(win.scenes[i].vortexes[j].destPos.x)+" "
+                           +QString().setNum(win.scenes[i].vortexes[j].destPos.y)+" "
+                           +QString().setNum(win.scenes[i].vortexes[j].destPos.z));
+    }
+}
+
+void Form::cmdSync()
+{
+    win.logMessage("[INFO] UDP: Syncing players manually");
+    win.sync.doSync();
+}
+
+void Form::cmdDebugStressLoad()
+{
+    FUNCTION_SELECT_ALL_PLAYERS
+    {
+        sendLoadSceneRPC(VAR_ALL_PLAYERS, "gemmines");
+    }
+}
+
+void Form::cmdTpPlayerToPlayer(quint16 sourceId, quint16 destId)
+{
+    Player* sourcePlayer;
+    FUNCTION_SELECT_ALL_PLAYERS
+    {
+        if (VAR_ALL_PLAYERS->pony.id == sourceId)
+        {
+            sourcePlayer = VAR_ALL_PLAYERS;
+            break; // We break here and start another loop because we may have skipped the destId during the loop!
+        }
+        else
+        {
+            win.logStatusMessage("[INFO] Error: Source player is not on the server or doesn't exist!");
+            return;
+        }
+    }
+
+    FUNCTION_SELECT_ALL_PLAYERS
+    {
+        if (VAR_ALL_PLAYERS->pony.id == destId)
+        {
+            win.logMessage(QString("[INFO] UDP: Teleporting "+sourcePeer->pony.name+" to "+VAR_ALL_PLAYERS->pony.name));
+            if (VAR_ALL_PLAYERS->pony.sceneName.toLower() != sourcePlayer->pony.sceneName.toLower())
+            {
+                sendLoadSceneRPC(sourcePlayer, VAR_ALL_PLAYERS->pony.sceneName, VAR_ALL_PLAYERS->pony.pos);
+            }
+            else
+            {
+                sendMove(sourcePlayer, VAR_ALL_PLAYERS->pony.pos.x, VAR_ALL_PLAYERS->pony.pos.y, VAR_ALL_PLAYERS->pony.pos.z);
+            }
+            return;
+        }
+        else
+        {
+            win.logStatusMessage("[INFO] Error: Destination player is not on the server or doesn't exist!");
+            return;
+        }
+    }
+}
+
+void Form::cmdServerSay(QString msg)
+{
+    FUNCTION_SELECT_ALL_PLAYERS
+    {
+        sendChatMessage(VAR_ALL_PLAYERS, "<span color=\"cyan\">"+msg+"</span>", "[SERVER]", ChatGeneral);
+    }
+}
+
+void Form::cmdAnnouncement(QString msg, float duration)
+{
+    FUNCTION_SELECT_ALL_PLAYERS
+    {
+        sendAnnouncementMessage(VAR_ALL_PLAYERS, msg, duration);
+    }
+}
+//------------
+void Form::cmdAnnouncePlayer(Player *player, QString msg, float duration)
+{
+    sendAnnouncementMessage(player, msg, duration);
+}
+
+void Form::cmdKickPlayer(Player *player, QString reason)
+{
+    QByteArray data(1,0);
+    data[0] = 0x7F;
+    data += stringToData(reason);
+
+    win.logMessage("[INFO] Kicking Player...");
+    sendMessage(player, MsgDisconnect, "Kicked by Admin \n\nReason \n-------------------------------\n"+data);
+
+    FUNCTION_SELECT_ALL_PLAYERS
+    {
+        sendChatMessage(VAR_ALL_PLAYERS, "Kicked <span color=\"cyan\">"+player->pony.name+" ("+player->name+")</span> for <span color\"orange\">"+reason+"</span>", serverPrefix, ChatGeneral);
+    }
+}
+
+void Form::cmdLoadScene(Player *player, QString scenename)
+{
+    sendLoadSceneRPC(player, scenename);
+}
+
+void Form::cmdGetPosition(Player *player)
+{
+    win.logMessage(QString("Pos : x=") + QString().setNum(player->pony.pos.x)
+               + ", y=" + QString().setNum(player->pony.pos.y)
+               + ", z=" + QString().setNum(player->pony.pos.z));
+}
+UVector Form::cmdGetPositionL(Player *player) {  return player->pony.pos; }
+
+void Form::cmdGetRotation(Player *player)
+{
+    win.logMessage(QString("Rot : x=") + QString().setNum(win.cmdPeer->pony.rot.x)
+               + ", y=" + QString().setNum(win.cmdPeer->pony.rot.y)
+               + ", z=" + QString().setNum(win.cmdPeer->pony.rot.z)
+               + ", w=" + QString().setNum(win.cmdPeer->pony.rot.w));
+}
+UQuaternion Form::cmdGetRotationU(Player *player) { return player->pony.rot; }
+
+void Form::cmdGetPonyData(Player *player)
+{
+    win.logMessage("[INFO] ponyData for this player: "+win.cmdPeer->pony.ponyData.toBase64());
+}
+QByteArray Form::cmdGetPonyDataD(Player *player) { return player->pony.ponyData; }
+
+void Form::cmdSendPonies(Player *player)
+{
+    win.logMessage("[INFO] Sending ponies to this player.");
+    sendPonies(player);
+}
+
+void Form::cmdSendUtils3(Player *player)
+{
+    win.logMessage("[INFO] UDP: Sending Utils3 request");
+    QByteArray data(1,3);
+    sendMessage(player,MsgUserReliableOrdered6,data);
+}
+
+void Form::cmdSetPlayerId(Player *player, unsigned id)
+{
+    QByteArray data(3,4);
+
+    win.logMessage("[INFO] UDP: Sending setPlayerId request");
+    data[1] = (quint8)(id&0xFF);
+    data[2] = (quint8)((id >> 8)&0xFF);
+    sendMessage(player, MsgUserReliableOrdered6, data);
+}
+
+void Form::cmdReloadNpcs(Player *player, QString npcName)
+{
+    win.logMessage("[INFO] Reloading the NPC Database...");
+
+    Pony* npc = nullptr;
+
+    for (int i=0; i<win.npcs.size(); i++)
+    {
+        if (win.npcs[i]->name == npcName)
+        {
+            npc = win.npcs[i];
+            break;
+        }
+    }
+
+    if (npc != nullptr)
+    {
+        // Reload the entire NPC database
+        win.npcs.clear();
+        win.quests.clear();
+        unsigned quests = 0;
+
+        QDir npcsDir("data/npcs/");
+        QStringList files = npcsDir.entryList(QDir::Files);
+        for (int i=0; i<files.size(); i++, quests++) // For each vortex file
+        {
+            Quest *quest = new Quest("data/npcs/"+files[i], nullptr);
+            win.quests << *quest;
+            win.npcs << quest->npc;
+        }
+        win.logMessage("[INFO] Reloaded "+QString().setNum(quests)+" quests/npcs.");
+
+        // Resend if needed
+        if (npc->sceneName.toLower() == player->pony.sceneName.toLower())
+        {
+            sendNetviewRemove(player, npc->netviewId);
+            sendNetviewInstantiate(npc, win.cmdPeer);
+        }
+    }
+    else
+    {
+        win.logMessage("[INFO] NPC not found");
+    }
+}
+
+void Form::cmdSendPonyData(Player *player, QString ponyData)
+{
+    QByteArray pData = stringToData(ponyData);
+
+    QByteArray data(3, 0xC8);
+    data[0] = (quint8)(player->pony.netviewId&0xFF);
+    data[1] = (quint8)((player->pony.netviewId>>8)&0xFF);
+    data += pData;
+
+    sendMessage(player, MsgUserReliableOrdered18, data);
+}
+void Form::cmdSendPonyData(Player *player, QByteArray ponyData)
+{
+    QByteArray data(3, 0xC8);
+    data[0] = (quint8)(player->pony.netviewId&0xFF);
+    data[1] = (quint8)((player->pony.netviewId>>8)&0xFF);
+    data += ponyData;
+
+    sendMessage(player, MsgUserReliableOrdered18, data);
+}
+
+void Form::cmdSetStat(Player *player, quint8 statId, float statValue)
+{
+    sendSetStatRPC(player, statId, statValue);
+}
+
+void Form::cmdSetMaxStat(Player *player, quint8 statId, float statValue)
+{
+    sendSetMaxStatRPC(player, statId, statValue);
+}
+
+void Form::cmdInstantiate(Player *player)
+{
+    win.logMessage("[INFO] UDP: Cloning/instantiating this player.");
+    sendNetviewInstantiate(player);
+}
+
+void Form::cmdInstantiate(Player *player, unsigned viewId, unsigned ownerId, float posx, float posy, float posz, float rotx, float roty, float rotz, float rotw)
+{
+    const unsigned key = qFloor((qrand()*65535)+200); // This is the key, which no one knows what it was for, it was never documented, so, we will just send a random number;
+    QByteArray data(1,1);
+
+    data += stringToData(key);
+
+    QByteArray params(4,0);
+    params[0] = (quint8)(viewId&0xFF);
+    params[1] = (quint8)((viewId >> 8)&0xFF);
+    params[2] = (quint8)(ownerId&0xFF);
+    params[3] = (quint8)((ownerId >> 8)&0xFF);
+    data += params1;
+
+    data += floatToData(posx);
+    data += floatToData(posy);
+    data += floatToData(posz);
+
+    data += floatToData(rotx);
+    data += floatToData(roty);
+    data += floatToData(rotz);
+    data += floatToData(rotw);
+
+    win.logMessage(QString("[INFO] UDP: Instantiating player with advanced info ").append(key));
+    sendMessage(player, MsgUserReliableOrdered6, data);
+}
+
+void Form::cmdBeginDialog(Player *player)
+{
+    QByteArray data(1,0);
+    data[0] = 11; // Request number
+
+    sendMessage(player,MsgUserReliableOrdered4, data);
+}
+void Form::cmdEndDialog(Player *player)
+{
+    QByteArray data(1,0);
+    data[0] = 13; // Request number
+
+    sendMessage(player,MsgUserReliableOrdered4, data);
+}
+void Form::cmdSetDialogMsg(Player *player, QString msg)
+{
+    QByteArray data(1,0);
+    data[0] = 0x11; // Request number
+    data += stringToData(args[0]);
+    data += stringToData(args[1]);
+    data += (char)0; // emoticon
+    data += (char)0; // emoticon
+
+    sendMessage(player,MsgUserReliableOrdered4, data);
+}
+void Form::cmdSetDialogOptions(Player *player, QString options)
+{
+    QStringList args = options.split(" ", QString::SkipEmptyParts);
+    sendDialogOptions(player, args);
+}
+
+void Form::cmdMove(Player *player, float x, float y, float z)
+{
+    sendMove(player, x, y, z);
+}
+
+void Form::cmdErrorMessage(Player *player, QString msg)
+{
+    QByteArray data(1,0);
+    data[0] = 0x7f; // Request number
+
+    data += stringToData(msg);
+
+    sendMessage(player,MsgUserReliableOrdered4, data);
+}
+
+void Form::cmdListQuests(Player *player)
+{
+    for (const Quest& quest : player->pony.quests)
+    {
+        win.logMessage("[INFO] Quest "+QString().setNum(quest.id)+" ("+*(quest.name)
+                       +") : "+QString().setNum(quest.state));
+    }
+}
+
+void Form::cmdListMobs()
+{
+    for (const Mob* mob : win.mobs)
+    {
+        win.logMessage("[INFO] Mobs: "+QString().setNum(mob->id)+"("+QString().setNum(mob->netviewId)
+                       +" | "+mob->modelName+" at "+QString().setNum(mob->pos.x)
+                       +" | "+QString().setNum(mob->pos.y)
+                       +" | "+QString().setNum(mob->pos.z));
+    }
+}
+
+void Form::cmdListInventory(Player *player)
+{
+    for (const InventoryItem& item : player->pony.inv)
+    {
+        win.logMessage("[INFO] This player has the following in his inventory: \n"
+                       +QString().setNum(item.id)+" | InvPos"
+                       +QString().setNum(item.index)+") | Amount: "
+                       +QString().setNum(item.amount));
+    }
+}
+
+void Form::cmdListWornItems(Player *player)
+{
+    for (const WearableItem* item : player->pony.worn)
+    {
+        win.logMessage("[INFO] Items worn by this player: \n"
+                       +QString().setNum(item.id)+" | In slot "+QString().setNum(item.index));
+    }
+}
+
+void Form::cmdListNpcs()
+{
+    for (const Pony* npc : win.npcs)
+    {
+        win.logMessage("List of NPCs: \n"+QString().setNum(npc->id)
+                       +"/"+QString().setNum(npc->netviewId)
+                       +" | "+npc->name);
+    }
+}
+
+void Form::cmdGiveItem(Player *player, int itemId, int amount)
+{
+    if (amount > 0)
+    {
+        player->pony.addInventoryItem(itemId, amount);
+    }
+    else
+    {
+        player->pony.addInventoryItem(itemId, -amount);
+    }
 }
 
 // Processes the commands entered directly in the server, not the chat messages
@@ -175,12 +621,12 @@ void Widget::sendCmdLine()
         if (str.size()<=12)
         {
             for (int i=0; i<win.udpPlayers.size();i++)
-                win.logMessage(QString().setNum(win.udpPlayers[i]->pony.id)
-                               //+"("+QString().setNum(win.udpPlayers[i]->pony.netviewId)+")"
-                               +" | "+win.udpPlayers[i]->pony.name
-                               +" | "+win.udpPlayers[i]->IP
-                               +":"+QString().setNum(win.udpPlayers[i]->port)
-                               +" | "+QString().setNum((int)timestampNow()-win.udpPlayers[i]->lastPingTime)+"s");
+                win.logMessage(QString().setNum(VAR_ALL_PLAYERS->pony.id)
+                               //+"("+QString().setNum(VAR_ALL_PLAYERS->pony.netviewId)+")"
+                               +" | "+VAR_ALL_PLAYERS->pony.name
+                               +" | "+VAR_ALL_PLAYERS->IP
+                               +":"+QString().setNum(VAR_ALL_PLAYERS->port)
+                               +" | "+QString().setNum((int)timestampNow()-VAR_ALL_PLAYERS->lastPingTime)+"s");
             return;
         }
         str = str.right(str.size()-10);
@@ -189,9 +635,9 @@ void Widget::sendCmdLine()
             win.logMessage("[INFO] There are no players on or a scene was not found");
         else
             for (int i=0; i<scene->players.size();i++)
-                win.logMessage(win.udpPlayers[i]->IP
-                               +":"+QString().setNum(win.udpPlayers[i]->port)
-                               +" "+QString().setNum((int)timestampNow()-win.udpPlayers[i]->lastPingTime)+"s");
+                win.logMessage(VAR_ALL_PLAYERS->IP
+                               +":"+QString().setNum(VAR_ALL_PLAYERS->port)
+                               +" "+QString().setNum((int)timestampNow()-VAR_ALL_PLAYERS->lastPingTime)+"s");
         return;
     }
     else if (str.startsWith("listVortexes"))

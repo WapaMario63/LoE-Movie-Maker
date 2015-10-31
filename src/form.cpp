@@ -6,14 +6,10 @@
 #include "serialize.h"
 #include "mob.h"
 #include "settings_widget.h"
-#include <demo.h>
 
 #include <QProcess>
 #include <QMessageBox>
 #include <QSound>
-#include <QtMath>
-#include <QDesktopServices>
-#include <QUrl>
 
 bool ServerVersion::isBABSCon = true; // Use BABScon14 Configurations
 bool ServerVersion::isAugust = false; // Use August14 Configurations
@@ -47,13 +43,6 @@ Form::Form(QWidget *parent) :
     QTimer* timer = new QTimer();
     connect(timer, SIGNAL(timeout()), this, SLOT(refreshPlayerList()));
     timer->start(5000);
-
-    ui->sbxNpcMeters->setHidden(true);
-    ui->lblMetersInThe->setHidden(true);
-    ui->lblMeterCords->setHidden(true);
-    ui->cbxNpcMeterX->setHidden(true);
-    ui->cbxNpcMeterY->setHidden(true);
-    ui->cbxNpcMeterZ->setHidden(true);
 }
 
 Form::~Form()
@@ -113,212 +102,102 @@ void Form::sendCmdLine()
     }*/
     if (str == "stop")
     {
-        win.logMessage(QString("[INFO] Stopping server..."));
-        win.stopServer();
-        win.logStatusMessage(QString("[INFO] Server Stopped"));
-
-        win.logMessage(QString("[INFO] You may close the window now."));s
+        cmdStopServer();
     }
     else if (str == "start")
-      {
-        if (!win.udpSocket)
-          {
-            win.logMessage(QString("[INFO] Starting Server..."));
-            win.startServer();
-          }
-      }
+    {
+        cmdStartServer();
+    }
     else if (str == "help")
-      {
-        win.logMessage(QString("[INFO] Here is a list of normal commands: clear, stop, help, listTopPlayers, tp <player> <player>, setPlayer, listPlayers, move <x> <y> <z>, load <map>, getPos, getRot, error <message>, kick. \nFor debug commands use helpDebug."));
-      }
+    {
+        cmdShowHelp();
+    }
     else if (str == "helpDebug")
-      {
-        win.logMessage(QString("[INFO] Debug commands, don't mess with these much: listVortexes, sync, dbgStressLoad, getPonyData, sendPonies, setPlayerId, reloadNpc, sendPonyData, setStat, setMaxStat, instantiate, beginDialog, endDialog, setDialogMsg, setDialogOptions"));
-      }
+    {
+        cmdShowDebugHelp();
+    }
     else if (str == "listTcpPlayers")
     {
-        for (int i=0; i<win.tcpPlayers.size(); i++)
-        {
-            Player* p = win.tcpPlayers[i];
-            win.logMessage(p->name+" "+p->IP+":"+QString().setNum(p->port));
-        }
+        cmdListTcpPlayers();
         return;
     }
     else if (str.startsWith("setPlayer"))
     {
         if (win.udpPlayers.size() == 1)
         {
-            win.cmdPeer = win.udpPlayers[0];
-            QString peerName = win.cmdPeer->IP + ":" + QString().setNum(win.cmdPeer->port);
-            win.logMessage(QString("[INFO] UDP: Player has been set to ").append(peerName));
-            return;
+            cmdSetPlayer(); return;
         }
 
         str = str.right(str.size()-10);
-        QStringList args = str.split(':');
+        QStringList args = str.split(":");
+
         bool ok;
         if (args.size() != 2)
         {
-            if (args.size() != 1)
-            {
-                win.logMessage("[INFO] UDP: setPlayer takes a Player's ID or an IP:port combination from a player");
-                return;
-            }
-            quint16 id = args[0].toUInt(&ok);
+            quint16 id = args[0].toUint(&ok);
             if (!ok)
             {
                 win.logMessage("[INFO] UDP: setPlayer takes a player ID as a function/argument");
                 return;
             }
-            for (int i=0; i<win.udpPlayers.size();i++)
+            else
             {
-                if (win.udpPlayers[i]->pony.id == id)
-                {
-                    win.cmdPeer = Player::findPlayer(win.udpPlayers,win.udpPlayers[i]->IP, win.udpPlayers[i]->port);
-                    win.logMessage(QString("[INFO] UDP: Player set to "+win.udpPlayers[i]->pony.name));
-                    return;
-                }
+                cmdSetPlayer(id); return;
             }
-            win.logMessage(QString("[ERROR] UDP: Player not found (ID ").append(args[0]).append(") :/"));
-            return;
         }
-
-        quint16 port = args[1].toUInt(&ok);
-        if (!ok)
-        {
-            win.logMessage("[INFO] UDP: setPlayer takes a port as a function/argument");
-            return;
-        }
-
-        win.cmdPeer = Player::findPlayer(win.udpPlayers,args[0], port);
-        if (win.cmdPeer->IP!="")
-            win.logMessage(QString("[INFO] UDP: Player set to ").append(str));
         else
-            win.logMessage(QString("[ERROR] UDP: Player not found (").append(str).append(")"));
-        return;
+        {
+            quint16 port = args[1].toUint(&ok);
+            if (!ok)
+            {
+                win.logMessage("[INFO] UDP: setPlayer takes a player ID as a function/argument");
+                return;
+            }
+            else
+            {
+                cmdSetPlayer(args[0], port); return;
+            }
+        }
     }
     else if (str.startsWith("listPlayers"))
     {
-        if (str.size()<=12)
+        if (str.size() <= 12)
         {
-            for (int i=0; i<win.udpPlayers.size();i++)
-                win.logMessage(QString().setNum(win.udpPlayers[i]->pony.id)
-                               //+"("+QString().setNum(win.udpPlayers[i]->pony.netviewId)+")"
-                               +" | "+win.udpPlayers[i]->pony.name
-                               +" | "+win.udpPlayers[i]->IP
-                               +":"+QString().setNum(win.udpPlayers[i]->port)
-                               +" | "+QString().setNum((int)timestampNow()-win.udpPlayers[i]->lastPingTime)+"s");
-            return;
+            cmdListPlayers(); return;
         }
-        str = str.right(str.size()-10);
-        Scene* scene = findScene(str);
-        if (scene->name.isEmpty())
-            win.logMessage("[INFO] There are no players on or a scene was not found");
         else
-            for (int i=0; i<scene->players.size();i++)
-                win.logMessage(win.udpPlayers[i]->IP
-                               +":"+QString().setNum(win.udpPlayers[i]->port)
-                               +" "+QString().setNum((int)timestampNow()-win.udpPlayers[i]->lastPingTime)+"s");
-        return;
+        {
+            str = str.right(str.size()-12);
+            cmdListPlayers(str); return;
+        }
     }
     else if (str.startsWith("listVortexes"))
     {
-        for (int i=0; i<win.scenes.size(); i++)
-        {
-            win.logMessage("[INFO] Scene "+win.scenes[i].name);
-            for (int j=0; j<win.scenes[i].vortexes.size(); j++)
-                win.logMessage("[INFO] Vortex "+QString().setNum(win.scenes[i].vortexes[j].id)
-                               +" to "+win.scenes[i].vortexes[j].destName+" "
-                               +QString().setNum(win.scenes[i].vortexes[j].destPos.x)+" "
-                               +QString().setNum(win.scenes[i].vortexes[j].destPos.y)+" "
-                               +QString().setNum(win.scenes[i].vortexes[j].destPos.z));
-        }
+        cmdListVortexes();
         return;
     }
     else if (str.startsWith("sync"))
     {
-        win.logMessage("[INFO] UDP: Syncing players manually");
-        win.sync.doSync();
+        cmdSync();
         return;
     }
     // DEBUG global commands from now on
     else if (str==("dbgStressLoad"))
     {
-        // Send all the players to the GemMines at the same time
-        for (int i=0; i<win.udpPlayers.size(); i++)
-            sendLoadSceneRPC(win.udpPlayers[i], "GemMines");
-        return;
-    }
-    else if (str.startsWith("dbgStressLoad"))
-    {
-        str = str.mid(14);
-        // Send all the players to the given scene at the same time
-        for (int i=0; i<win.udpPlayers.size(); i++)
-            sendLoadSceneRPC(win.udpPlayers[i], str);
-        return;
+        cmdDebugStressLoad();
     }
     else if (str.startsWith("tp"))
     {
         str = str.right(str.size()-3);
-        QStringList args = str.split(' ');
-        if (args.size() != 2)
-        {
-            win.logStatusMessage("[INFO] Error: Usage is tp <playerID to move> <destination playerID>");
-            return;
-        }
-        bool ok;
-        bool ok1;
-        bool ok2 = false;
-        quint16 sourceID = args[0].toUInt(&ok);
-        quint16 destID = args[1].toUInt(&ok1);
-        Player* sourcePeer;
-        if (!ok && !ok1)
-        {
-            win.logStatusMessage("[INFO] Error: Usage is tp <playerID to move> <destination playerID>");
-            return;
-        }
-        for (int i=0; i<win.udpPlayers.size();i++)
-        {
-            if (win.udpPlayers[i]->pony.id == sourceID)
-            {
-                sourcePeer = win.udpPlayers[i];
-                ok2 = true;
-                break;
-            }
-        }
-        if (!ok2)
-        {
-            win.logStatusMessage("[INFO] Error: Source player is not on the server or doesn't exist!");
-            return;
-        }
-        for (int i=0; i<win.udpPlayers.size();i++)
-        {
-            if (win.udpPlayers[i]->pony.id == destID)
-            {
-                win.logMessage(QString("[INFO] UDP: Teleported "+sourcePeer->pony.name+" to "+win.udpPlayers[i]->pony.name));
-                if (win.udpPlayers[i]->pony.sceneName.toLower() != sourcePeer->pony.sceneName.toLower())
-                {
-                    sendLoadSceneRPC(sourcePeer, win.udpPlayers[i]->pony.sceneName, win.udpPlayers[i]->pony.pos);
-                }
-                else
-                {
-                    sendMove(sourcePeer, win.udpPlayers[i]->pony.pos.x, win.udpPlayers[i]->pony.pos.y, win.udpPlayers[i]->pony.pos.z);
-                }
-                return;
-            }
-        }
-        win.logMessage("[INFO] Error: Source player is not on the server or doesn't exist!");
-        return;
+        QStringList args = str.split(" ", QString::SkipEmptyParts);
+
+        cmdTpPlayerToPlayer(args[0].toUint(), args[1].toUint());
     }
     else if (str.startsWith("say"))
     {
         str = str.right(str.size()-4);
-        for (int i=0; i<win.udpPlayers.size(); i++)
-          {
-            sendChatMessage(win.udpPlayers[i], "<span color=\"cyan\">"+str+"</span>", "[SERVER]", ChatGeneral);
-          }
-        //cwin.logChatMessage("<SERVER> "+str);
-        return;
+
+        cmdServerSay(str);
     }
     else if (str.startsWith("gm"))
     {
@@ -334,13 +213,8 @@ void Form::sendCmdLine()
     else if (str.startsWith("announceall"))
     {
         str = str.right(str.size()-12);
-
-        QStringList args = str.split('|');
-        if (args.size() != 2) return;
-
-        sendAnnouncementMessage(win.cmdPeer, args[1], args[0].toFloat());
-
-        return;
+        QStringList args = str.split("|", QString::SkipEmptyParts);
+        cmdAnnouncement(args[1], args[0].toFloat());
     }
 
     if (win.cmdPeer->IP=="")
@@ -470,18 +344,11 @@ void Form::sendCmdLine()
         str = str.mid(10);
         Pony* npc = NULL;
         for (int i=0; i<win.npcs.size(); i++)
-        {
             if (win.npcs[i]->name == str)
             {
                 npc = win.npcs[i];
                 break;
             }
-            else if (QString().setNum(win.npcs[i]->id) == str)
-            {
-                npc = win.npcs[i];
-                break;
-            }
-        }
         if (npc != NULL)
         {
             // Reload the NPCs from the DB
@@ -611,7 +478,7 @@ void Form::sendCmdLine()
             win.logStatusMessage(QString("[INFO] Error : Instantiate takes 0,3,6 or 10 arguments").append(str));
             return;
         }
-        // Au as au moins les 3 premiers de toute facon (google translated: To have at least the first 3 anyway)
+        // Au as au moins les 3 premiers de toute facon
         data += stringToData(args[0]);
         unsigned viewId, ownerId;
         bool ok1, ok2;
@@ -630,7 +497,7 @@ void Form::sendCmdLine()
         data += params1;
         float x1=0,y1=0,z1=0;
         float x2=0,y2=0,z2=0,w2=0;
-        if (args.size() >= 6) // Si on a le vecteur position on l'ajoute (google translated: If one has the position vector is added)
+        if (args.size() >= 6) // Si on a le vecteur position on l'ajoute
         {
             bool ok1, ok2, ok3;
             x1=args[3].toFloat(&ok1);
@@ -808,7 +675,7 @@ void Form::sendCmdLine()
     }
     else if (str.startsWith("announce"))
     {
-        str = str.right(str.size()-9);
+        str = str.right(str.size()-13);
 
         QStringList args = str.split('|');
         if (args.size() != 2) return;
@@ -899,7 +766,7 @@ void Form::launchClient()
     if (clientExePath == "" && clientExePathA == "" && clientExePathO == "" && clientExePathJ == "")
     {
         win.logMessage("[INFO] There are no clients!");
-        MsgBox(MsgBoxType::Critical, "Error", "No Clients found! \nMake sure there is a .ini file with the name of the exe.");
+        MsgBox(MsgBoxType::Critical, "Error", "No Clients found! \nMake sure there is a .loe file with the name of the exe.");
     }
     else
     {
@@ -981,11 +848,7 @@ void Form::on_btnPlayerTp_clicked()
 
 void Form::on_btnPosTp_clicked()
 {
-    if (win.cmdPeer->IP=="") // <-- This asshole causes crashes when used on an UI system.
-                             //     Can't do crap about it since it's a core server variable
-                             //     And I use it for checking if a player has been set or not,
-                             //     because if I don't ugly things happen.
-        MsgBox(MsgBoxType::Warning, "Error", "No Player Set!");
+    if (win.cmdPeer->IP=="") MsgBox(MsgBoxType::Warning, "Error", "No Player Set!");
     else externCmdLine("move "+ui->txtPosX->text()+" "+ui->txtPosY->text()+" "+ui->txtPosZ->text());
 }
 
@@ -1030,11 +893,11 @@ void Form::on_btnSetPlayer_clicked()
 
 void Form::on_listPlayers_itemClicked(QListWidgetItem *item)
 {
-    QStringList args = item->text().split(' ');
+    QString itm = item->text();
+    QStringList args = itm.split(' ');
 
     //ui->lineEdit->setText(args[0]);
     lwin.externCmdLine("setPlayer "+args[0]);
-    ui->lblPlayerSetStatus->setText("Player set to "+args[0]);
 }
 
 void Form::on_pushButton_clicked()
@@ -1078,37 +941,4 @@ void Form::on_btnStartStopServer_clicked()
         ui->btnStartStopServer->setText("Start Server");
         ui->cbxServerSelector->setDisabled(false);
     }
-}
-
-void Form::on_pushButton_2_clicked()
-{
-    dem.show();
-}
-
-
-
-void Form::on_btnAboutQt_clicked()
-{
-    QMessageBox::aboutQt(this, "About Qt");
-}
-
-void Form::on_btnAbout_clicked()
-{
-    QString ITSABRAKEM8 = "</p>";
-    QMessageBox::about(this, "About LoE Movie Maker",
-           "<p><b>About LoE Movie Maker<b>"+ITSABRAKEM8+
-           "<p>LoE Movie Maker is a program made for the use of making Legends of Equestria Machinima and Bloopers."+ITSABRAKEM8+
-           "<p>LoE Movie Maker utilizes [LoEWCT] v0.6.1 for it's LoE Private Server functionality."+ITSABRAKEM8+
-           "<p>LoE Movie Maker and [LoEWCT] are made by WapaMario63, uses code from the original mlkj's Private Server, which uses the MIT license (it changed to the GPLv3 on the UI overhall, which has never been ported to [LoEWCT])"+ITSABRAKEM8+
-           "<p>LoE Movie Maker and [LoEWCT] are licensed under the MIT license (was going to be GPL, but it kinda scared me away).</p>");
-}
-
-void Form::on_btnWebsiteLink_clicked()
-{
-    QDesktopServices::openUrl(QUrl("http://www.loewct.tk/"));
-}
-
-void Form::on_btnNPCManager_clicked()
-{
-
 }

@@ -56,59 +56,58 @@ public slots:
     void cmdShowDebugHelp();
     void cmdListTcpPlayers();
     void cmdSetPlayer();
-    void cmdSetPlayer(int id);
+    void cmdSetPlayer(quint16 id);
     void cmdSetPlayer(QString IP, quint16 port);
-    void cmdlistPlayers();
+    void cmdListPlayers();
+    void cmdListPlayers(QString scenename);
     void cmdListVortexes();
     void cmdSync();
     void cmdDebugStressLoad();
-    void cmdTpPlayerToPlayer(int id1, int id2);
-    void cmdServerSay(QString msg, int type); // Id for type is on the ChatType enum at message.h
-    void cmdAnnouncement(QString msg);
+    void cmdTpPlayerToPlayer(quint16 sourceId, quint16 destId);
+    void cmdServerSay(QString msg);
+    void cmdAnnouncement(QString msg, float duration);
     void cmdListNpcs();
 
     // Helpers for player sets
     Player getPlayer();
-    void refreshPlayerInfo(Player* peer);
-    void noPlayer();
+    Player refreshPlayerInfo(Player* peer);
+    Player clearPlayer(Player* peer); // Only for clearing of the cmdPeer!
 
     // Commands that require a set player
     // All you need now is a player, no wonky id parsing that crashes everything!
-    void cmdKickPlayer(Player* player);
+    void cmdKickPlayer(Player* player, QString reason);
     //void cmdBanPlayer(Player* player); // Incomplete function from old [LoEWCT], disabling alpha function entirely.
-    void cmdLoadScene(Player* player);
+    void cmdLoadScene(Player* player, QString scenename);
     void cmdGetPosition(Player* player);
-    QList<float> cmdGetPositionL(Player *player); // For those kind of people who prefer it in an array list. (Not used in cmd)
-    QVector<float> cmdGetPositionV(Player *player); // Or Vector list, I have no idea what are the differenses, so enjoy the convenience. (Not used in cmd)
+    UVector cmdGetPositionU(Player *player); // For Those who prefer it in its original form. (Not used in cmd)
     void cmdGetRotation(Player* player);
-    QList<float> cmdGetRotationL(Player *player);
-    QVector<float> cmdGetRotationV(Player *player);
+    UQuaternion cmdGetRotationU(Player *player);
     void cmdGetPonyData(Player* player);
     QByteArray cmdGetPonyDataD(Player *player); // For those who prefer getting the raw data. (Not used in cmd)
     void cmdSendPonies(Player* player);
     void cmdSendUtils3(Player* player);
     void cmdSetPlayerId(Player* player, unsigned id);
-    void cmdReloadNpcs(Player* player);
+    void cmdReloadNpcs(Player* player, QString npcName);
     void cmdSendRemoveKill(Player* player);
     void cmdSendRemove(Player* player);
     void cmdSendPonyData(Player* player, QString ponyData);
     void cmdSendPonyData(Player *player, QByteArray ponyData); // Because, there are those times you need to send raw data, right?
-    void cmdSetPlayerStat(Player* player, quint8 statId, float statValue); // 0 = health, 1 = energy
+    void cmdSetStat(Player* player, quint8 statId, float statValue); // 0 = health, 1 = energy
     void cmdSetMaxStat(Player* player, quint8 statId, float statValue);
     void cmdInstantiate(Player* player);
     void cmdInstantiate(Player* player, unsigned viewId, unsigned ownerId, float posx=0, float posy=0, float posz=0, float rotx=0,float roty=0,float rotz=0, float rotw=0);
     void cmdBeginDialog(Player* player);
     void cmdEndDialog(Player* player);
     void cmdSetDialogMsg(Player* player, QString msg);
-    void cmdSetDialogOptions(Player* player);
+    void cmdSetDialogOptions(Player* player, QString options);
     void cmdMove(Player* player, float x, float y, float z);
     void cmdErrorMessage(Player* player, QString msg);
     void cmdListQuests(Player* player);
-    void cmdListMobs(Player* player);
+    void cmdListMobs();
     void cmdListInventory(Player* player);
     void cmdListWornItems(Player* player);
     void cmdGiveItem(Player* player, int itemId, int amount);
-    void cmdAnnouncePlayer(Player* player, QString msg);
+    void cmdAnnouncePlayer(Player* player, QString msg, float duration);
 
 private slots:
     void on_btnSettings_clicked();
