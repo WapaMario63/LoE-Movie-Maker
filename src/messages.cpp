@@ -653,7 +653,7 @@ void sendRotate(Player* player, UQuaternion rot)
     data += floatToData(rot.x);
     data += floatToData(rot.y);
     data += floatToData(rot.z);
-    data += floatToData(rot.z);
+    data += floatToData(rot.w);
 
     win.logMessage("[INFO] UDP: Rotating player: "+player->pony.name);
 

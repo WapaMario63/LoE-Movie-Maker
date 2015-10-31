@@ -6,10 +6,13 @@
 #include "serialize.h"
 #include "mob.h"
 #include "settings_widget.h"
+#include "demo.h"
 
 #include <QProcess>
 #include <QMessageBox>
 #include <QSound>
+#include <QDesktopServices>
+#include <QUrl>
 
 bool ServerVersion::isBABSCon = true; // Use BABScon14 Configurations
 bool ServerVersion::isAugust = false; // Use August14 Configurations
@@ -130,11 +133,10 @@ void Form::sendCmdLine()
 
         str = str.right(str.size()-10);
         QStringList args = str.split(":");
-
         bool ok;
         if (args.size() != 2)
         {
-            quint16 id = args[0].toUint(&ok);
+            quint16 id = args[0].toUInt(&ok);
             if (!ok)
             {
                 win.logMessage("[INFO] UDP: setPlayer takes a player ID as a function/argument");
@@ -147,7 +149,7 @@ void Form::sendCmdLine()
         }
         else
         {
-            quint16 port = args[1].toUint(&ok);
+            quint16 port = args[1].toUInt(&ok);
             if (!ok)
             {
                 win.logMessage("[INFO] UDP: setPlayer takes a player ID as a function/argument");
@@ -191,7 +193,7 @@ void Form::sendCmdLine()
         str = str.right(str.size()-3);
         QStringList args = str.split(" ", QString::SkipEmptyParts);
 
-        cmdTpPlayerToPlayer(args[0].toUint(), args[1].toUint());
+        cmdTpPlayerToPlayer(args[0].toUInt(), args[1].toUInt());
     }
     else if (str.startsWith("say"))
     {
@@ -941,4 +943,34 @@ void Form::on_btnStartStopServer_clicked()
         ui->btnStartStopServer->setText("Start Server");
         ui->cbxServerSelector->setDisabled(false);
     }
+}
+void Form::on_pushButton_2_clicked()
+{
+    dem.show();
+}
+
+void Form::on_btnAboutQt_clicked()
+{
+    QMessageBox::aboutQt(this, "About Qt");
+}
+
+void Form::on_btnAbout_clicked()
+{
+    QString ITSABRAKEM8 = "</p>";
+    QMessageBox::about(this, "About LoE Movie Maker",
+           "<p><b>About LoE Movie Maker<b>"+ITSABRAKEM8+
+           "<p>LoE Movie Maker is a program made for the use of making Legends of Equestria Machinima and Bloopers."+ITSABRAKEM8+
+           "<p>LoE Movie Maker utilizes [LoEWCT] v0.6.1 for it's LoE Private Server functionality."+ITSABRAKEM8+
+           "<p>LoE Movie Maker and [LoEWCT] are made by WapaMario63, uses code from the original mlkj's Private Server, which uses the MIT license (it changed to the GPLv3 on the UI overhall, which has never been ported to [LoEWCT])"+ITSABRAKEM8+
+           "<p>LoE Movie Maker and [LoEWCT] are licensed under the MIT license (was going to be GPL, but it kinda scared me away).</p>");
+}
+
+void Form::on_btnWebsiteLink_clicked()
+{
+    QDesktopServices::openUrl(QUrl("http://www.loewct.tk/"));
+}
+
+void Form::on_btnNPCManager_clicked()
+{
+
 }

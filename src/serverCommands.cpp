@@ -10,20 +10,23 @@
 
 #include <QtMath>
 
+QSettings loeWctConfig(LOEWCTCONFIGFILEPATH, QSettings::IniFormat);
+QString serverPrefix = loeWctConfig.value("serverPrefix", "[LoEWCT]").toString();
+
 void Form::cmdStopServer()
 {
-    logMessage(QString("[INFO] Stopping server..."));
-    stopServer();
-    logStatusMessage(QString("[INFO] Server Stopped"));
+    win.logMessage(QString("[INFO] Stopping server..."));
+    win.stopServer();
+    win.logStatusMessage(QString("[INFO] Server Stopped"));
 
-    logMessage(QString("[INFO] You may close the window now."));
+    win.logMessage(QString("[INFO] You may close the window now."));
 }
 void Form::cmdStartServer()
 {
-    if (!udpSocket)
+    if (!win.udpSocket)
       {
-        logMessage(QString("[INFO] Starting Server..."));
-        startServer();
+        win.logMessage(QString("[INFO] Starting Server..."));
+        win.startServer();
       }
 }
 void Form::cmdShowHelp()
@@ -61,7 +64,7 @@ void Form::cmdSetPlayer(quint16 id)
         }
         else
         {
-            win.logMessage(QString("[ERROR] UDP: Player not found (ID ").append(args[0]).append(")"));
+            win.logMessage(QString("[ERROR] UDP: Player not found (ID ").append(id).append(")"));
         }
     }
 }
@@ -172,7 +175,7 @@ void Form::cmdTpPlayerToPlayer(quint16 sourceId, quint16 destId)
     {
         if (VAR_ALL_PLAYERS->pony.id == destId)
         {
-            win.logMessage(QString("[INFO] UDP: Teleporting "+sourcePeer->pony.name+" to "+VAR_ALL_PLAYERS->pony.name));
+            win.logMessage(QString("[INFO] UDP: Teleporting "+sourcePlayer->pony.name+" to "+VAR_ALL_PLAYERS->pony.name));
             if (VAR_ALL_PLAYERS->pony.sceneName.toLower() != sourcePlayer->pony.sceneName.toLower())
             {
                 sendLoadSceneRPC(sourcePlayer, VAR_ALL_PLAYERS->pony.sceneName, VAR_ALL_PLAYERS->pony.pos);
@@ -238,14 +241,14 @@ void Form::cmdGetPosition(Player *player)
                + ", y=" + QString().setNum(player->pony.pos.y)
                + ", z=" + QString().setNum(player->pony.pos.z));
 }
-UVector Form::cmdGetPositionL(Player *player) {  return player->pony.pos; }
+UVector Form::cmdGetPositionU(Player *player) { return player->pony.pos; }
 
 void Form::cmdGetRotation(Player *player)
 {
-    win.logMessage(QString("Rot : x=") + QString().setNum(win.cmdPeer->pony.rot.x)
-               + ", y=" + QString().setNum(win.cmdPeer->pony.rot.y)
-               + ", z=" + QString().setNum(win.cmdPeer->pony.rot.z)
-               + ", w=" + QString().setNum(win.cmdPeer->pony.rot.w));
+    win.logMessage(QString("Rot : x=") + QString().setNum(player->pony.rot.x)
+               + ", y=" + QString().setNum(player->pony.rot.y)
+               + ", z=" + QString().setNum(player->pony.rot.z)
+               + ", w=" + QString().setNum(player->pony.rot.w));
 }
 UQuaternion Form::cmdGetRotationU(Player *player) { return player->pony.rot; }
 
@@ -365,14 +368,14 @@ void Form::cmdInstantiate(Player *player, unsigned viewId, unsigned ownerId, flo
     const unsigned key = qFloor((qrand()*65535)+200); // This is the key, which no one knows what it was for, it was never documented, so, we will just send a random number;
     QByteArray data(1,1);
 
-    data += stringToData(key);
+    data += key;
 
     QByteArray params(4,0);
     params[0] = (quint8)(viewId&0xFF);
     params[1] = (quint8)((viewId >> 8)&0xFF);
     params[2] = (quint8)(ownerId&0xFF);
     params[3] = (quint8)((ownerId >> 8)&0xFF);
-    data += params1;
+    data += params;
 
     data += floatToData(posx);
     data += floatToData(posy);
@@ -403,6 +406,8 @@ void Form::cmdEndDialog(Player *player)
 }
 void Form::cmdSetDialogMsg(Player *player, QString msg)
 {
+    QStringList args = msg.split(" ", QString::SkipEmptyParts);
+
     QByteArray data(1,0);
     data[0] = 0x11; // Request number
     data += stringToData(args[0]);
@@ -466,7 +471,7 @@ void Form::cmdListInventory(Player *player)
 
 void Form::cmdListWornItems(Player *player)
 {
-    for (const WearableItem* item : player->pony.worn)
+    for (const WearableItem& item : player->pony.worn)
     {
         win.logMessage("[INFO] Items worn by this player: \n"
                        +QString().setNum(item.id)+" | In slot "+QString().setNum(item.index));

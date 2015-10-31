@@ -1,6 +1,13 @@
 #include "NpcManager.h"
 #include "ui_NpcManager.h"
 
+#include <QtMath>
+#include <QFile>
+#include <QTextStream>
+#include "demo.h" // temporary
+#include "widget.h"
+#include "form.h"
+
 NpcManager::NpcManager(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::NpcManager)
