@@ -4,7 +4,6 @@
 #include "message.h"
 #include "widget.h"
 #include "chat_widget.h"
-#include "loewct_main.h"
 #include "settings.h"
 #include "form.h"
 #include <demo.h>

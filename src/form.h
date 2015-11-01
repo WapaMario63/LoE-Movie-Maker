@@ -3,11 +3,12 @@
 
 #include <QWidget>
 
+#include "character.h"
 #include <message.h>
 
 class QListWidgetItem;
 class QFile;
-class Player;
+
 
 namespace Ui {
 class Form;

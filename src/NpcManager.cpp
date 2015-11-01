@@ -38,7 +38,7 @@ void NpcManager::on_cbxGenNPCself_stateChanged(int arg1)
     }
 }
 
-void NpcManager::on_cbxGenNpcMeters_stateChanged(int arg1)
+/*void NpcManager::on_cbxGenNpcMeters_stateChanged(int arg1)
 {
     if (arg1 == 2)
     {
@@ -58,7 +58,7 @@ void NpcManager::on_cbxGenNpcMeters_stateChanged(int arg1)
         ui->lblMeterCords->setEnabled(false);
         ui->lblMetersInThe->setEnabled(false);
     }
-}
+}*/
 
 void NpcManager::on_cbxGenNpcPonyData_stateChanged(int arg1)
 {
@@ -102,7 +102,8 @@ void NpcManager::on_btnGenerateNpc_clicked()
     if (win.cmdPeer->IP == "")
     {
         win.logMessage("[ERROR] No player selected!");
-        MsgBox(MsgBoxType::Warning, "Error", "No Player Set!");
+
+        lwin.MsgBox(Form::Warning, "Error", "No Player Set!");
         return;
     }
 
@@ -110,7 +111,7 @@ void NpcManager::on_btnGenerateNpc_clicked()
     QString PoneName;
     QString PoneData, PoneItems;
     float PosX, PosY, PosZ, RotX, RotY, RotZ, RotW;
-    float meters;
+    //float meters = 0;
 
     if (ui->txtNpcName->text().isEmpty())
     {
@@ -121,11 +122,11 @@ void NpcManager::on_btnGenerateNpc_clicked()
         PoneName = ui->txtNpcName->text();
     }
 
-    if (ui->cbxGenNpcMeters->isChecked())
+    /*if (ui->cbxGenNpcMeters->isChecked())
     {
         meters = ui->sbxNpcMeters->text().toFloat();
     }
-    else meters = 0;
+    else meters = 0;*/
 
     if (ui->cbxGenNpcPonyData->isChecked())
         PoneData = ui->txtNpcPonyData->text();

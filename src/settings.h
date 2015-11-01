@@ -35,14 +35,20 @@
 #define IF_AUGUST_BUILD false
 #define IF_BABSCON_BUILD true
 #define IF_BABS15_BUILD false
-#define LOEWCT_VERSION "v0.6.1"
+#define IF_AUG15_BUILD false
+#define LOEWCT_VERSION "v0.6.2a"
 #define MAX_PACKET_DUPS 1000
 
-#define BABSCON15
+//#define BABSCON15
 
+/// Macros that are made to save time on things that are typed in lots of areas in the code.
+// Function Macros
+#define FUNCTION_SELECT_ALL_PLAYERS for (int PLR=0; PLR<win.udpPlayers.size(); PLR++) // Since this is a for loop, you need to add the '{ }'
+                                                                                      // after it and put the code that interacts with all
+                                                                                      // players. don't forget to use VAR_ALL_PLAYERS.
 
-#define FUNCTION_SELECT_ALL_PLAYERS for (int PLR=0; PLR<win.udpPlayers.size(); PLR++)
-#define VAR_ALL_PLAYERS win.udpPlayers[PLR]
+// Variable Macros
+#define VAR_ALL_PLAYERS win.udpPlayers[PLR] // Can only be used inside FUNCTION_SELECT_ALL_FLAYERS
 
 /* LoE Server Config */
 

@@ -7,6 +7,7 @@
 #include "mob.h"
 #include "settings_widget.h"
 #include "demo.h"
+#include "character.h"
 
 #include <QProcess>
 #include <QMessageBox>

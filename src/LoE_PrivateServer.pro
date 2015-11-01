@@ -31,13 +31,11 @@ SOURCES += main.cpp \
     quest.cpp \
     serialize.cpp \
     items.cpp \
-    loewct_main.cpp \
     receiveack.cpp \
     receivechatmessage.cpp \
     mob.cpp \
     mobsparser.cpp \
     mobstats.cpp \
-    loewct_pluginloader.cpp \
     settings_widget.cpp \
     skill.cpp \
     skillparser.cpp \
@@ -68,7 +66,6 @@ HEADERS  += widget.h \
     serialize.h \
     items.h \
     sendMessage.h \
-    loewct_main.h \
     receiveack.h \
     receiveChatMessage.h \
     mob.h \
@@ -79,7 +76,6 @@ HEADERS  += widget.h \
     packetloss.h \
     receiveMessage.h \
     PluginInterface.h \
-    loewct_pluginloader.h \
     settings_widget.h \
     skill.h \
     skillparser.h \
@@ -115,6 +111,4 @@ macx {
 
 CONFIG += c++11
 
-RESOURCES += \
-    resources.qrc \
-    data.qrc
+RESOURCES += resources.qrc

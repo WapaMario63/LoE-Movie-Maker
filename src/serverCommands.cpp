@@ -5,7 +5,6 @@
 #include "serialize.h"
 #include "mob.h"
 #include "chat_widget.h"
-#include "loewct_main.h"
 #include "form.h"
 
 #include <QtMath>
@@ -365,7 +364,7 @@ void Form::cmdInstantiate(Player *player)
 
 void Form::cmdInstantiate(Player *player, unsigned viewId, unsigned ownerId, float posx, float posy, float posz, float rotx, float roty, float rotz, float rotw)
 {
-    const unsigned key = qFloor((qrand()*65535)+200); // This is the key, which no one knows what it was for, it was never documented, so, we will just send a random number;
+    const unsigned key = qFloor((qrand()*65535)+200); // This is the key, which no one knows what it was for, it was never documented, so, we will just send a random number
     QByteArray data(1,1);
 
     data += key;
