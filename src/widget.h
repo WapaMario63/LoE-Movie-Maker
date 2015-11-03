@@ -135,7 +135,5 @@ private:
 
 // Global import from main
 extern Widget win;
-extern QTextStream cout;
-extern QTextStream cin;
 
 #endif // WIDGET_H

@@ -8,6 +8,7 @@
 #include "settings_widget.h"
 #include "demo.h"
 #include "character.h"
+#include "console.h"
 
 #include <QProcess>
 #include <QMessageBox>
@@ -106,30 +107,30 @@ void Form::sendCmdLine()
     }*/
     if (str == "stop")
     {
-        cmdStopServer();
+        cmd.cmdStopServer();
     }
     else if (str == "start")
     {
-        cmdStartServer();
+        cmd.cmdStartServer();
     }
     else if (str == "help")
     {
-        cmdShowHelp();
+        cmd.cmdShowHelp();
     }
     else if (str == "helpDebug")
     {
-        cmdShowDebugHelp();
+        cmd.cmdShowDebugHelp();
     }
     else if (str == "listTcpPlayers")
     {
-        cmdListTcpPlayers();
+        cmd.cmdListTcpPlayers();
         return;
     }
     else if (str.startsWith("setPlayer"))
     {
         if (win.udpPlayers.size() == 1)
         {
-            cmdSetPlayer(); return;
+            cmd.cmdSetPlayer(); return;
         }
 
         str = str.right(str.size()-10);
@@ -145,7 +146,7 @@ void Form::sendCmdLine()
             }
             else
             {
-                cmdSetPlayer(id); return;
+                cmd.cmdSetPlayer(id); return;
             }
         }
         else
@@ -158,7 +159,7 @@ void Form::sendCmdLine()
             }
             else
             {
-                cmdSetPlayer(args[0], port); return;
+                cmd.cmdSetPlayer(args[0], port); return;
             }
         }
     }
@@ -166,41 +167,41 @@ void Form::sendCmdLine()
     {
         if (str.size() <= 12)
         {
-            cmdListPlayers(); return;
+            cmd.cmdListPlayers(); return;
         }
         else
         {
             str = str.right(str.size()-12);
-            cmdListPlayers(str); return;
+            cmd.cmdListPlayers(str); return;
         }
     }
     else if (str.startsWith("listVortexes"))
     {
-        cmdListVortexes();
+        cmd.cmdListVortexes();
         return;
     }
     else if (str.startsWith("sync"))
     {
-        cmdSync();
+        cmd.cmdSync();
         return;
     }
     // DEBUG global commands from now on
     else if (str==("dbgStressLoad"))
     {
-        cmdDebugStressLoad();
+        cmd.cmdDebugStressLoad();
     }
     else if (str.startsWith("tp"))
     {
         str = str.right(str.size()-3);
         QStringList args = str.split(" ", QString::SkipEmptyParts);
 
-        cmdTpPlayerToPlayer(args[0].toUInt(), args[1].toUInt());
+        cmd.cmdTpPlayerToPlayer(args[0].toUInt(), args[1].toUInt());
     }
     else if (str.startsWith("say"))
     {
         str = str.right(str.size()-4);
 
-        cmdServerSay(str);
+        cmd.cmdServerSay(str);
     }
     else if (str.startsWith("gm"))
     {
@@ -217,7 +218,7 @@ void Form::sendCmdLine()
     {
         str = str.right(str.size()-12);
         QStringList args = str.split("|", QString::SkipEmptyParts);
-        cmdAnnouncement(args[1], args[0].toFloat());
+        cmd.cmdAnnouncement(args[1], args[0].toFloat());
     }
 
     if (win.cmdPeer->IP=="")
@@ -431,7 +432,7 @@ void Form::sendCmdLine()
         QStringList args = str.split(' ');
         if (args.size() != 2)
         {
-            win.logStatusMessage("[INFO] Error : usage is setState StatID StatValue");
+            win.logStatusMessage("[INFO] Error : usage is setStat StatID StatValue");
             return;
         }
         bool ok,ok2;
@@ -439,7 +440,7 @@ void Form::sendCmdLine()
         float statValue = args[1].toFloat(&ok2);
         if (!ok || !ok2)
         {
-            win.logStatusMessage("[INFO] Error : usage is setState StatID StatValue");
+            win.logStatusMessage("[INFO] Error : usage is setStat StatID StatValue");
             return;
         }
         sendSetStatRPC(win.cmdPeer, statID, statValue);

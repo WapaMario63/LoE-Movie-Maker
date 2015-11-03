@@ -27,7 +27,6 @@ SOURCES += main.cpp \
 	sync.cpp \
     receiveMessage.cpp \
     sendMessage.cpp \
-    serverCommands.cpp \
     quest.cpp \
     serialize.cpp \
     items.cpp \
@@ -53,7 +52,9 @@ SOURCES += main.cpp \
     CustomContentManager.cpp \
     moderation.cpp \
     demo.cpp \
-    NpcManager.cpp
+    NpcManager.cpp \
+    console.cpp \
+    consoleCommandHandler.cpp
 
 HEADERS  += widget.h \
 	character.h \
@@ -94,7 +95,9 @@ HEADERS  += widget.h \
     CustomContentManager.h \
     moderation.h \
     demo.h \
-    NpcManager.h
+    NpcManager.h \
+    console.h \
+    loewct.h
 
 FORMS    += widget.ui \
     settings_widget.ui \

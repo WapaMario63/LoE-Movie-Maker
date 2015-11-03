@@ -12,6 +12,7 @@
 #include "animation.h"
 #include "settings.h"
 #include "form.h"
+#include "console.h"
 
 #if PONY_PLATFORM == PLAT_WIN32 || PONY_PLATFORM == PLAT_WIN64
 #include <windows.h>

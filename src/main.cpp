@@ -23,6 +23,7 @@ Form lwin;
 Demo dem;
 QTextStream cout(stdout);
 QTextStream cin(stdin);
+QTextStream cerr(stderr);
 
 int main(int, char**)
 {
