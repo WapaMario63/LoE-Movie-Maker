@@ -1,8 +1,8 @@
 #include "sendMessage.h"
 #include "character.h"
 #include "widget.h"
-#include "utils.h"
-#include "serialize.h"
+#include "Utils/utils.h"
+#include "Utils/serialize.h"
 #include "packetloss.h"
 
 void sendMessage(Player* player,quint8 messageType, QByteArray data)

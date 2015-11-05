@@ -1,8 +1,8 @@
 #include "console.h"
 
 #include "message.h"
-#include "utils.h"
-#include "serialize.h"
+#include "Utils/utils.h"
+#include "Utils/serialize.h"
 #include "mob.h"
 #include "chat_widget.h"
 #include "loewct.h"
@@ -16,6 +16,9 @@ Console::Console(QObject *parent)
     : QObject(parent),
       cmdPlayer(new Player())
 {
+    cmdThread = new LoEWCT_Thread(this);
+
+    connect(cmdThread, SIGNAL(CommandSend(QString)), this, SLOT(inputCmdHandler(QString)));
 }
 
 Console::~Console()
@@ -35,11 +38,11 @@ void Console::clearPlayer() { cmdPlayer = nullptr; }
 // Logging
 void Console::logInfoMsg(QString msg)
 {
-    cout << QDateTime::currentDateTime().toString("[hh:mm:ss AP] ") << "" << msg << endl;
+    cout << QDateTime::currentDateTime().toString("[hh:mm:ss AP] ") << "[INFO] " << msg << endl;
 }
 void Console::logErrMsg(QString msg)
 {
-    cerr << QDateTime::currentDateTime().toString("[hh:mm:ss AP] ") << "" << msg << endl;
+    cerr << QDateTime::currentDateTime().toString("[hh:mm:ss AP] ") << "[ERROR] " << msg << endl;
 }
 
 // Normal Commands
@@ -61,7 +64,7 @@ void Console::cmdStartServer()
 }
 void Console::cmdShowHelp()
 {
-    logInfoMsg(QString("Here is a list of normal commands: clear, stop, help, listTopPlayers, tp <player> <player>, setPlayer, listPlayers, move <x> <y> <z>, load <map>, getPos, getRot, error <message>, kick. \nFor debug commands use helpDebug."));
+    logInfoMsg(QString("Commands: \n- stop \n- help \n- listTcpPlayers \n- tp <player> <player> \n- setPlayer <id|IP:port> \n- listPlayers \n- move <x> <y> <z> \n- load <map> \n- getPos \n- getRot \n- error <message>, \n- kick \nFor debug commands use helpDebug."));
 }
 void Console::cmdShowDebugHelp()
 {
@@ -357,6 +360,31 @@ void Console::cmdReloadNpcs(Player *player, QString npcName)
     {
         logInfoMsg("NPC not found");
     }
+}
+
+void Console::cmdSendRemoveKill(Player *player, unsigned id)
+{
+    QByteArray data(4,2);
+
+    logInfoMsg("UDP: Sending remove request with kill reason code.");
+
+    data[1] = id;
+    data[2] = id >> 8;
+    data[3] = NetviewRemoveReasonKill;
+
+    sendMessage(player, MsgUserReliableOrdered6, data);
+}
+
+void Console::cmdSendRemove(Player *player, unsigned id)
+{
+    QByteArray data(3,2);
+
+    logInfoMsg("UDP: Sending remove request");
+
+    data[1] = id;
+    data[2] = id >> 8;
+
+    sendMessage(player, MsgUserReliableOrdered6, data);
 }
 
 void Console::cmdSendPonyData(Player *player, QString ponyData)

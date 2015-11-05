@@ -5,7 +5,7 @@
 #include <QMutex>
 #include <QByteArray>
 #include <QStringList>
-#include "dataType.h"
+#include "Utils/dataType.h"
 #include "form.h"
 
 enum NetviewRemoveReasonCodes {

@@ -8,7 +8,7 @@
 #include <QMutex>
 #include <QByteArray>
 #include <QDateTime>
-#include "dataType.h"
+#include "Utils/dataType.h"
 #include "quest.h"
 #include "sceneEntity.h"
 #include "statsComponent.h"

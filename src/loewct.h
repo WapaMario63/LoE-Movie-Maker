@@ -17,8 +17,8 @@
 #include <Player/quest.h>
 #include <Messages/message.h>
 #include <Player/scene.h>
-#include <Data/dataType.h>
-#include <Data/serialize.h>
+#include <Utils/dataType.h>
+#include <Utils/serialize.h>
 #endif
 
 /***

@@ -2,6 +2,7 @@
 #define SERVERCOMMANDS
 
 #include <form.h>
+#include <Utils/Thread.h>
 
 #include <QTextStream>
 
@@ -33,12 +34,12 @@ public:
 
     // Helpers
     void clearPlayer();
-    void inputCmdHandler(QString str);
 
     // Event Loop
     void run();
 
 public slots:
+    void inputCmdHandler(QString str);
     // Slots because it could be usefull for QObject connections and modularity.
 
     // Normal Commands
@@ -74,8 +75,8 @@ public slots:
     void cmdSendUtils3(Player* player);
     void cmdSetPlayerId(Player* player, unsigned id);
     void cmdReloadNpcs(Player* player, QString npcName);
-    void cmdSendRemoveKill(Player* player);
-    void cmdSendRemove(Player* player);
+    void cmdSendRemoveKill(Player* player, unsigned id);
+    void cmdSendRemove(Player* player, unsigned id);
     void cmdSendPonyData(Player* player, QString ponyData);
     void cmdSendPonyData(Player *player, QByteArray ponyData); // Because, there are those times you need to send raw data, right?
     void cmdSetStat(Player* player, quint8 statId, float statValue); // 0 = health, 1 = energy
@@ -94,7 +95,9 @@ public slots:
     void cmdListWornItems(Player* player);
     void cmdGiveItem(Player* player, int itemId, int amount);
     void cmdAnnouncePlayer(Player* player, QString msg, float duration);
-private:
+public: // Vars
+    LoEWCT_Thread *cmdThread;
+private: // Vars
     Player* cmdPlayer;
     QString cmdString;
 };

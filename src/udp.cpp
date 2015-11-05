@@ -1,7 +1,7 @@
 #include "widget.h"
 #include "message.h"
-#include "serialize.h"
-#include "utils.h"
+#include "Utils/serialize.h"
+#include "Utils/utils.h"
 
 void Widget::udpProcessPendingDatagrams()
 {

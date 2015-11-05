@@ -1,35 +1,35 @@
 #include <console.h>
 #include <loewct.h>
 #include <widget.h>
-#include <serialize.h>
+#include <Utils/serialize.h>
 
 void Console::inputCmdHandler(QString str)
 {
-    if (str.startsWith("start"))
+    if (str ==("start"))
     {
-        cmdStartServer(); return;
+        cmdStartServer();
     }
-    else if (str.startsWith("stop"))
+    else if (str ==("stop"))
     {
-        cmdStopServer(); return;
+        cmdStopServer();
     }
-    else if (str.startsWith("help"))
+    else if (str ==("help") || str == "?")
     {
-        cmdShowHelp(); return;
+        cmdShowHelp();
     }
-    else if (str.startsWith("helpDebug"))
+    else if (str ==("helpDebug"))
     {
-        cmdShowDebugHelp(); return;
+        cmdShowDebugHelp();
     }
-    else if (str.startsWith("listTcpPlayers"))
+    else if (str ==("listTcpPlayers"))
     {
-        cmdListTcpPlayers(); return;
+        cmdListTcpPlayers();
     }
-    else if (str.startsWith("setPlayer"))
+    else if (str ==("setPlayer"))
     {
         if (win.udpPlayers.size() == 1)
         {
-            cmdSetPlayer(); return;
+            cmdSetPlayer();
         }
 
         str = str.right((str.size()-10));
@@ -41,11 +41,11 @@ void Console::inputCmdHandler(QString str)
             if (!ok)
             {
                 logErrMsg("UDP: setPlayer takes a player ID as a function/argument");
-                return;
+
             }
             else
             {
-                cmd.cmdSetPlayer(id); return;
+                cmd.cmdSetPlayer(id);
             }
         }
         else
@@ -54,51 +54,51 @@ void Console::inputCmdHandler(QString str)
             if (!ok)
             {
                 logErrMsg("UDP: setPlayer takes a player ID as a function/argument");
-                return;
+
             }
             else
             {
-                cmdSetPlayer(args[0], port); return;
+                cmdSetPlayer(args[0], port);
             }
         }
     }
-    else if (str.startsWith("listPlayers"))
+    else if (str ==("listPlayers"))
     {
         if (str.size() <= 12)
         {
-            cmdListPlayers(); return;
+            cmdListPlayers();
         }
         else
         {
             str = str.right(str.size()-12);
-            cmdListPlayers(str); return;
+            cmdListPlayers(str);
         }
     }
-    else if (str.startsWith("listVortexes"))
+    else if (str ==("listVortexes"))
     {
-        cmdListVortexes(); return;
+        cmdListVortexes();
     }
-    else if (str.startsWith("sync"))
+    else if (str ==("sync"))
     {
-        cmdSync(); return;
+        cmdSync();
     }
-    else if (str.startsWith("dbgStressLoad"))
+    else if (str ==("dbgStressLoad"))
     {
-        cmdDebugStressLoad(); return;
+        cmdDebugStressLoad();
     }
-    else if (str.startsWith("tp"))
+    else if (str ==("tp"))
     {
         str = str.right(str.size()-3);
         QStringList args = str.split(" ", QString::SkipEmptyParts);
 
         cmdTpPlayerToPlayer(args[0].toUInt(), args[1].toUInt());
-        return;
+
     }
-    else if (str.startsWith("say"))
+    else if (str ==("say"))
     {
         str = str.right(str.size()-4);
 
-        cmdServerSay(str); return;
+        cmdServerSay(str);
     }
     else if (str.startsWith("announce"))
     {
@@ -110,7 +110,7 @@ void Console::inputCmdHandler(QString str)
             QStringList args = str.split("|", QString::SkipEmptyParts);
 
             cmdAnnouncement(args[1],args[0].toFloat());
-            return;
+
         }
         else if (str == "player")
         {
@@ -118,83 +118,83 @@ void Console::inputCmdHandler(QString str)
             str = str.right(str.size()-7);
             QStringList args = str.split("|", QString::SkipEmptyParts);
             cmdAnnouncePlayer(cmdPlayer, args[1], args[0].toFloat());
-            return;
+
         }
     }
-    else if (str.startsWith("kick"))
+    else if (str ==("kick"))
     {
         isPlayerNotSet();
         str = str.right(str.size()-5);
         cmdKickPlayer(cmdPlayer, str);
-        return;
+
     }
-    else if (str.startsWith("ban"))
+    else if (str ==("ban"))
     {
         logInfoMsg("Banning Functionality disabled in this [LoEWCT] version as it's deprecated and it doesn't work properly.");
-        return;
+
     }
-    else if (str.startsWith("loadscene"))
+    else if (str ==("loadscene"))
     {
         isPlayerNotSet();
         str = str.mid(10);
         cmdLoadScene(cmdPlayer, str);
-        return;
+
     }
-    else if (str.startsWith("getPos"))
+    else if (str ==("getPos"))
     {
         isPlayerNotSet();
         cmdGetPosition(cmdPlayer);
-        return;
+
     }
-    else if (str.startsWith("getRot"))
+    else if (str ==("getRot"))
     {
         isPlayerNotSet();
         cmdGetRotation(cmdPlayer);
-        return;
+
     }
-    else if (str.startsWith("getPonyData"))
+    else if (str ==("getPonyData"))
     {
         isPlayerNotSet();
         logInfoMsg("ponyData for "+cmdPlayer->pony.name+":\n"+
                    cmdPlayer->pony.ponyData.toBase64());
-        return;
+
     }
-    else if (str.startsWith("dbgSendPonies"))
+    else if (str ==("dbgSendPonies"))
     {
         isPlayerNotSet();
         logInfoMsg("Sending ponies list to: "+cmdPlayer->name);
         cmdSendPonies(cmdPlayer);
-        return;
+
     }
-    else if (str.startsWith("dbgSendUtils3"))
+    else if (str ==("dbgSendUtils3"))
     {
         isPlayerNotSet();
         logInfoMsg("Sending Utils3 request to: "+cmdPlayer->name);
         cmdSendUtils3(cmdPlayer);
-        return;
+
     }
-    else if (str.startsWith("dbgSetPlayerId"))
+    else if (str ==("dbgSetPlayerId"))
     {
         isPlayerNotSet();
         str = str.right(str.size()-15);
         cmdSetPlayerId(cmdPlayer, str.toUInt());
-        return;
+
     }
-    else if (str.startsWith("dbgReloadNpcs"))
+    else if (str ==("dbgReloadNpcs"))
     {
         isPlayerNotSet();
         str = str.right(str.size()-14);
         cmdReloadNpcs(cmdPlayer, str);
-        return;
+
     }
-    else if (str.startsWith("dbgSendPonyData"))
+    else if (str ==("dbgSendPonyData"))
     {
         isPlayerNotSet();
         str = str.right(str.size()-16);
         cmdSendPonyData(cmdPlayer, stringToData(str).toBase64());
-        return;
+
     }
-    else if (str.startsWith("dbgSetStat"))
+    else if (str ==("dbgSetStat"))
     {
         isPlayerNotSet();
         str = str.right(str.size()-11);
@@ -203,7 +203,7 @@ void Console::inputCmdHandler(QString str)
         if (args.size() != 2)
         {
             logErrMsg("Usage is 'dbgSetStat <statId> <statValue>'");
-            return;
+
         }
         bool ok, ok2;
         quint8 statID = args[0].toInt(&ok);
@@ -211,15 +211,15 @@ void Console::inputCmdHandler(QString str)
         if (!ok || !ok2)
         {
             logErrMsg("StatId is an 8bit unsigned integer and statValue is a floating number.");
-            return;
+
         }
         else
         {
             cmdSetStat(cmdPlayer, statID, statVal);
-            return;
+
         }
     }
-    else if (str.startsWith("dbgSetMaxStat"))
+    else if (str ==("dbgSetMaxStat"))
     {
         isPlayerNotSet();
         str = str.right(str.size()-14);
@@ -228,7 +228,7 @@ void Console::inputCmdHandler(QString str)
         if (args.size() != 2)
         {
             logErrMsg("Usage is 'dbgSetMaxStat <statId> <statValue>'");
-            return;
+
         }
         bool ok, ok2;
         quint8 statID = args[0].toInt(&ok);
@@ -236,22 +236,22 @@ void Console::inputCmdHandler(QString str)
         if (!ok || !ok2)
         {
             logErrMsg("StatId is an 8bit unsigned integer and statValue is a floating number.");
-            return;
+
         }
         else
         {
             cmdSetMaxStat(cmdPlayer, statID, statVal);
-            return;
+
         }
     }
-    else if (str.startsWith("instantiate"))
+    else if (str ==("instantiate"))
     {
         isPlayerNotSet();
 
         if (str == "instantiate")
         {
             cmdInstantiate(cmdPlayer);
-            return;
+
         }
         else
         {
@@ -260,117 +260,117 @@ void Console::inputCmdHandler(QString str)
             if (args.size() == 2)
             {
                 cmdInstantiate(cmdPlayer, args[0].toUInt(), args[1].toUInt());
-                return;
+
             }
             else if (args.size() == 5)
             {
                 cmdInstantiate(cmdPlayer, args[0].toUInt(), args[1].toUInt(), args[2].toFloat(), args[3].toFloat(), args[4].toFloat());
-                return;
+
             }
             else if (args.size() == 9)
             {
                 cmdInstantiate(cmdPlayer, args[0].toUInt(), args[1].toUInt(), args[2].toFloat(), args[3].toFloat(), args[4].toFloat(), args[5].toFloat(), args[6].toFloat(), args[7].toFloat(), args[8].toFloat());
-                return;
+
             }
             else
             {
                 logErrMsg("Usage is 'instantiate <viewId> <ownerId> [x] [y] [z] [rx] [ry] [rz] [rw]'");
-                return;
+
             }
         }
     }
-    else if (str.startsWith("dbgBeginDialog"))
+    else if (str ==("dbgBeginDialog"))
     {
         isPlayerNotSet();
         cmdBeginDialog(cmdPlayer);
-        return;
+
     }
-    else if (str.startsWith("dbgEndDialog"))
+    else if (str ==("dbgEndDialog"))
     {
         isPlayerNotSet();
         cmdEndDialog(cmdPlayer);
-        return;
+
     }
-    else if (str.startsWith("dbgSetDialogMsg"))
+    else if (str ==("dbgSetDialogMsg"))
     {
         isPlayerNotSet();
         str = str.right(str.size()-16);
         cmdSetDialogMsg(cmdPlayer, str);
-        return;
+
     }
-    else if (str.startsWith("dbgSetDialogOptions"))
+    else if (str ==("dbgSetDialogOptions"))
     {
         isPlayerNotSet();
         str = str.right(str.size()-20);
 
         cmdSetDialogOptions(cmdPlayer, str);
-        return;
+
     }
-    else if (str.startsWith("move"))
+    else if (str ==("move"))
     {
         isPlayerNotSet();
         str = str.right(str.size()-5);
 
         QStringList args = str.split(" ", QString::SkipEmptyParts);
         cmdMove(cmdPlayer, args[0].toFloat(), args[1].toFloat(), args[2].toFloat());
-        return;
+
     }
-    else if (str.startsWith("error"))
+    else if (str ==("error"))
     {
         isPlayerNotSet();
         str = str.right(str.size()-6);
         cmdErrorMessage(cmdPlayer, str);
-        return;
+
     }
-    else if (str.startsWith("listQuests"))
+    else if (str ==("listQuests"))
     {
         isPlayerNotSet();
         cmdListQuests(cmdPlayer);
-        return;
+
     }
-    else if (str.startsWith("listMobs"))
+    else if (str ==("listMobs"))
     {
-        cmdListMobs(); return;
+        cmdListMobs();
     }
-    else if (str.startsWith("listInventory"))
+    else if (str ==("listInventory"))
     {
         isPlayerNotSet();
         cmdListInventory(cmdPlayer);
-        return;
+
     }
-    else if (str.startsWith("listWorn"))
+    else if (str ==("listWorn"))
     {
         isPlayerNotSet();
         cmdListWornItems(cmdPlayer);
-        return;
+
     }
-    else if (str.startsWith("giveItem"))
+    else if (str ==("giveItem"))
     {
         isPlayerNotSet();
         str = str.right(str.size()-9);
         QStringList args = str.split(" ", QString::SkipEmptyParts);
 
         cmdGiveItem(cmdPlayer, args[0].toInt(), args[1].toInt());
-        return;
+
     }
-    else if (str.startsWith("listNpcs"))
+    else if (str ==("listNpcs"))
     {
-        cmdListNpcs(); return;
+        cmdListNpcs();
     }
-    else if (str.startsWith("giveMod"))
-    {
-        logInfoMsg("Moderation Functionality is disabled in this [LoEWCT] version as it's deprecated and it doesn't work properly.");
-        return;
-    }
-    else if (str.startsWith("deMod"))
+    else if (str ==("giveMod"))
     {
         logInfoMsg("Moderation Functionality is disabled in this [LoEWCT] version as it's deprecated and it doesn't work properly.");
-        return;
+
+    }
+    else if (str ==("deMod"))
+    {
+        logInfoMsg("Moderation Functionality is disabled in this [LoEWCT] version as it's deprecated and it doesn't work properly.");
+
     }
     else
     {
         logErrMsg("Unknown command. Type 'help' or '?' for a list of commands.");
-        return;
+
     }
 }
 

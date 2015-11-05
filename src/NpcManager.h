@@ -24,7 +24,7 @@ private:
 private slots:
     void on_cbxGenNPCself_stateChanged(int arg1);
 
-    void on_cbxGenNpcMeters_stateChanged(int arg1);
+    //void on_cbxGenNpcMeters_stateChanged(int arg1);
 
     void on_cbxGenNpcPonyData_stateChanged(int arg1);
 

@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QList>
-#include "dataType.h"
+#include "Utils/dataType.h"
 #include "character.h"
 #include "sceneEntity.h"
 

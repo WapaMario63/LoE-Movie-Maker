@@ -5,6 +5,7 @@
 
 #include "character.h"
 #include <message.h>
+#include <Utils/Thread.h>
 
 class QListWidgetItem;
 class QFile;
@@ -24,15 +25,19 @@ namespace ServerVersion
 class Form : public QWidget
 {
     Q_OBJECT
-
-public slots:
-    void sendCmdLine();
-    void refreshPlayerList();
-
+public:
+    enum MsgBoxType
+    {
+        Critical,
+        Warning,
+        Info,
+        Question
+    };
 public:
     explicit Form(QWidget *parent = 0);
     ~Form();
 
+    /// TODO: Make a better way to find clients other than being this specific and cringe inducing
     //Global Vars
     QString clientName, clientExePath, clientDataPath, clientAssemblyPath; // BABSCon Build
     QString clientNameA, clientExePathA, clientDataPathA, clientAssemblyPathA; // August Build
@@ -45,6 +50,12 @@ public:
     void logStatusMsg(QString str);
     void launchClient();
     void searchClientPath();
+
+    void MsgBox(MsgBoxType type, QString title, QString text);
+
+public slots:
+    void sendCmdLine();
+    void refreshPlayerList();
 
 private slots:
     void on_btnSettings_clicked();
@@ -60,29 +71,14 @@ private slots:
     void on_listPlayers_itemClicked(QListWidgetItem *item);
     void on_pushButton_clicked();
     void on_sendInputCmd_clicked();
-
     void on_btnStartStopServer_clicked();
-
     void on_pushButton_2_clicked();
-
-
     void on_btnAbout_clicked();
-
     void on_btnAboutQt_clicked();
-
     void on_btnWebsiteLink_clicked();
-
     void on_btnNPCManager_clicked();
-
-public:
-    enum MsgBoxType
-    {
-        Critical,
-        Warning,
-        Info,
-        Question
-    };
-    void MsgBox(MsgBoxType type, QString title, QString text);
+public: // Vars
+    QString commandString;
 };
 extern Form lwin;
 

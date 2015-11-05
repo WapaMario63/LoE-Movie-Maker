@@ -1,7 +1,7 @@
 #include "message.h"
 #include "character.h"
 #include "widget.h"
-#include "serialize.h"
+#include "Utils/serialize.h"
 #include "mob.h"
 #include "mobsparser.h"
 #include "mobstats.h"

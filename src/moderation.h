@@ -2,7 +2,7 @@
 #define MODERATION_H
 
 #include <QObject>
-#include <utils.h>
+#include <Utils/utils.h>
 #include <character.h>
 
 // ONLY AVAILABLE IN BABSCON15 WITH A FEW EXCEPTIONS

@@ -2,8 +2,8 @@
 #include <QDir>
 #include "widget.h"
 #include "character.h"
-#include "utils.h"
-#include "serialize.h"
+#include "Utils/utils.h"
+#include "Utils/serialize.h"
 #include "message.h"
 #include "sendMessage.h"
 #include "items.h"

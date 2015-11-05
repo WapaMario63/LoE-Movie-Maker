@@ -9,6 +9,7 @@
 #include <iostream>
 #include "lib.h"
 #include "form.h"
+#include "console.h"
 #include <demo.h>
 #include <QMessageBox>
 
@@ -21,12 +22,15 @@ Widget win;
 settings_widget swin;
 Form lwin;
 Demo dem;
+Console cmd;
 QTextStream cout(stdout);
 QTextStream cin(stdin);
 QTextStream cerr(stderr);
 
 int main(int, char**)
 {
+    // Threads
+
     // Windows DLL hell fix
     QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath());
     a.addLibraryPath("platforms");
@@ -39,22 +43,28 @@ int main(int, char**)
     // -> Thing is, doing this causes errors when doing it outside widget.cpp. Shit isn't it?
     QTranslator translator;
     if (!translator.load("languages/"+locale))
-      {
-        qDebug() << "[QDebug] No language translations found or unable to load them.";
-        win.logMessage("[INFO] No language translations found or unable to load them.");
-      }
+    {
+        //qDebug() << "[QDebug] No language translations found or unable to load them.";
+        //cmd.logInfoMsg("No language translations found or unable to load them.");
+    }
     else
     {
-        qDebug() << "[QDebug] Language translation loaded";
-        win.logMessage("[INFO] Loaded language translation: "+locale);
+        //qDebug() << "[QDebug] Language translation loaded";
+        //cmd.logInfoMsg("Loaded language translation: "+locale);
     }
     a.installTranslator(&translator);
 
     //cwin.show();
     //win.show();
+
     a.processEvents();
+
+    cmd.run();
+    cmd.cmdThread->start();
+
     lwin.show();
     lwin.searchClientPath();
+
     win.startServer();
 
     return a.exec(); // win's dtor will quick_exit (we won't run the atexits)

@@ -1,6 +1,6 @@
 #include "receiveChatMessage.h"
 #include "character.h"
-#include "serialize.h"
+#include "Utils/serialize.h"
 #include "message.h"
 #include "widget.h"
 #include "chat_widget.h"

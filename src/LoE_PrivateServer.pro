@@ -19,16 +19,16 @@ SOURCES += main.cpp \
 	tcp.cpp \
 	udp.cpp \
 	messages.cpp \
-	utils.cpp \
+        Utils/utils.cpp \
 	pingTimeout.cpp \
 	character.cpp \
 	scene.cpp \
-	dataType.cpp \
+        Utils/dataType.cpp \
 	sync.cpp \
     receiveMessage.cpp \
     sendMessage.cpp \
     quest.cpp \
-    serialize.cpp \
+    Utils/serialize.cpp \
     items.cpp \
     receiveack.cpp \
     receivechatmessage.cpp \
@@ -54,17 +54,18 @@ SOURCES += main.cpp \
     demo.cpp \
     NpcManager.cpp \
     console.cpp \
-    consoleCommandHandler.cpp
+    consoleCommandHandler.cpp \
+    Utils/Thread.cpp
 
 HEADERS  += widget.h \
 	character.h \
 	message.h \
-	utils.h \
+        Utils/utils.h \
 	scene.h \
-	dataType.h \
+        Utils/dataType.h \
 	sync.h \
     quest.h \
-    serialize.h \
+    Utils/serialize.h \
     items.h \
     sendMessage.h \
     receiveack.h \
@@ -97,7 +98,8 @@ HEADERS  += widget.h \
     demo.h \
     NpcManager.h \
     console.h \
-    loewct.h
+    loewct.h \
+    Utils/Thread.h
 
 FORMS    += widget.ui \
     settings_widget.ui \

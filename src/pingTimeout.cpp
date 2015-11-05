@@ -1,5 +1,5 @@
 #include "widget.h"
-#include "utils.h"
+#include "Utils/utils.h"
 #include "message.h"
 
 void Widget::checkPingTimeouts()

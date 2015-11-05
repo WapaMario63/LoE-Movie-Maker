@@ -36,7 +36,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string notr="true">LoE Movie Maker v1.1</string>
+   <string notr="true">LoE Movie Maker v1.2a</string>
   </property>
   <property name="windowIcon">
    <iconset resource="resources.qrc">

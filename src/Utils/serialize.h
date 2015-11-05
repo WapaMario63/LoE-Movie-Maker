@@ -5,7 +5,7 @@
 #include <QByteArray>
 #include <QVector3D>
 #include <QString>
-#include "dataType.h"
+#include "Utils/dataType.h"
 
 QByteArray doubleToData(double num);
 QByteArray floatToData(float num);

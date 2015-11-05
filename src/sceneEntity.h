@@ -2,7 +2,7 @@
 #define SCENEENTITY_H
 
 
-#include "dataType.h"
+#include "Utils/dataType.h"
 #include <QString>
 
 struct SceneEntity

@@ -36,7 +36,7 @@
 #define IF_BABS15_BUILD false
 #define IF_AUG15_BUILD false
 #define LOEWCT_VERSION "v0.6.2a"
-#define LOE_MM_VERSION "v1.3a"
+#define LOE_MM_VERSION "v1.2a"
 #define MAX_PACKET_DUPS 1000
 
 //#define BABSCON15

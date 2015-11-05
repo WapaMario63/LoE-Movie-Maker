@@ -2,7 +2,7 @@
 #include "ui_widget.h"
 #include "character.h"
 #include "message.h"
-#include "utils.h"
+#include "Utils/utils.h"
 #include "items.h"
 #include "mobsparser.h"
 #include "mob.h"
@@ -68,13 +68,11 @@ void Widget::logMessage(QString msg)
 void Widget::startServer()
 {
     ui->retranslateUi(this);
-    logStatusMessage(tr("----- DO NOT CLOSE THIS WINDOW -----"));
-    logStatusMessage(tr("[INFO] Initializing [LoEWCT]"));
-    if (ServerVersion::isBABSCon) logStatusMessage(tr("[INFO] Using configuration for the BABSCon (20140410) build."));
-    else if (ServerVersion::isAugust) logStatusMessage(tr("[INFO] Using configuration for the August (20140804) build."));
-    logStatusMessage(tr("[INFO] With version of LoE Private Server: ")+LOEWCT_VERSION);
-    logStatusMessage(tr("[INFO] Server made by mlkj/tux3, [LoEWCT] by WapaMario63"));
-    logStatusMessage(tr("[INFO] Check the changelog in the ponyforums.net thread."));
+    cmd.logInfoMsg("Initializing [LoEWCT]");
+    if (ServerVersion::isBABSCon) cmd.logInfoMsg("Using configuration for the BABSCon (20140410) build.");
+    else if (ServerVersion::isAugust) cmd.logInfoMsg("Using configuration for the August (20140804) build.");
+    cmd.logInfoMsg(tr("With version: %1").arg(LOEWCT_VERSION));
+    cmd.logInfoMsg("Check the changelog at http://www.loewct.tk/changelog.php");
 #ifdef __APPLE__
     // this fixes the directory in OSX so we can use the relative CONFIGFILEPATH and etc properly
     CFBundleRef mainBundle = CFBundleGetMainBundle();
@@ -93,7 +91,7 @@ void Widget::startServer()
     lastId=1;
 
     /// Read config
-    logStatusMessage(tr("[INFO] Reading config files ..."));
+    cmd.logInfoMsg("Reading config files ...");
     QSettings config(CONFIGFILEPATH, QSettings::IniFormat);
     loginPort = config.value("loginPort", 1031).toInt();
     gamePort = config.value("gamePort", 1039).toInt();
@@ -147,7 +145,7 @@ void Widget::startServer()
             QFile file("data/vortex/"+files[i]);
             if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
             {
-                logStatusMessage(tr("Error reading vortex DB"));
+                cmd.logErrMsg("Error reading vortex DB");
                 return;
             }
             QByteArray data = file.readAll();
@@ -165,7 +163,7 @@ void Widget::startServer()
                 QList<QByteArray> elems = lines[j].split(' ');
                 if (elems.size() < 5)
                 {
-                    logStatusMessage("Vortex DB is corrupted. Incorrect line ("
+                    cmd.logErrMsg("Vortex DB is corrupted. Incorrect line ("
                                     +QString().setNum(elems.size())+" elems), file " + files[i]);
                     corrupted=true;
                     break;
@@ -198,7 +196,7 @@ void Widget::startServer()
             return;
         }
 
-        logMessage("[INFO] Loaded " + QString().setNum(nVortex) + " vortexes in " + QString().setNum(scenes.size()) + " scenes");
+        cmd.logInfoMsg("Loaded " + QString().setNum(nVortex) + " vortexes in " + QString().setNum(scenes.size()) + " scenes");
     }
     // Load things related to LoEWCT
     /*
@@ -230,8 +228,8 @@ void Widget::startServer()
         }
         else
         {
-            win.logMessage(tr("[SEVERE] Couln't open Items.xml"));
-            win.logMessage(tr("[INFO] Server has crashed, stopping server."));
+            cmd.logErrMsg("Could not open Items.xml");
+            cmd.logErrMsg("Server cannot continue operation, aborting!");
             stopServer();
 
             return;
@@ -272,8 +270,8 @@ void Widget::startServer()
               QFile file(MOBSPATH+files[i]);
               if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
                 {
-                  logStatusMessage(tr("[SEVERE] Error reading mob zones."));
-                  win.logMessage(tr("[INFO] Server has crashed, close and open again."));
+                  cmd.logErrMsg("Error reading mob zones.");
+                  cmd.logErrMsg("Server cannot continue operation, aborting!");
                   return;
                 }
               QByteArray data = file.readAll();
@@ -284,14 +282,14 @@ void Widget::startServer()
               }
               catch (QString& error)
               {
-                win.logMessage(tr("[SEVERE] CRITICAL Error with mob zones!"));
-                win.logMessage(error);
-                win.logMessage(tr("[INFO] Server has crashed, stopping server."));
+                cmd.logErrMsg("CRITICAL Error with mob zones!");
+                cmd.logErrMsg(error);
+                cmd.logErrMsg("Server cannot continue operation, aborting!");
                 win.stopServer();
                 throw error;
               }
             }
-          logMessage("[INFO] Loaded "+QString().setNum(mobs.size())+" mobs in "+QString().setNum(mobzones.size())+" mob zones");
+          cmd.logInfoMsg("[INFO] Loaded "+QString().setNum(mobs.size())+" mobs in "+QString().setNum(mobzones.size())+" mob zones");
         }
         catch (...) {}
       }
@@ -300,18 +298,18 @@ void Widget::startServer()
         try
         {
             AnimationParser(GAMEDATAPATH+QString("Animations.json"));
-            logMessage(tr("[INFO] Loaded %1 animations").arg(Animation::animations.size()));
+            cmd.logInfoMsg(tr("[INFO] Loaded %1 animations").arg(Animation::animations.size()));
         }
         catch (const QString& e)
         {
-            logMessage(tr("[SEVERE] Error parsing animations: ")+e);
-            logMessage(tr("[INFO] Server crashed, stopping server"));
+            cmd.logErrMsg("Error parsing animations: "+e);
+            cmd.logErrMsg("Server cannot continue operation, aborting!");
             win.stopServer();
         }
         catch (const char* e)
         {
-            logMessage(tr("[SEVERE] Error parsing animations: ")+e);
-            logMessage(tr("[INFO] Server crashed, stopping server"));
+            cmd.logErrMsg(tr("Error parsing animations: %1").arg(e));
+            cmd.logErrMsg("Server cannot continue operation, aborting!");
             win.stopServer();
         }
     }
@@ -321,18 +319,18 @@ void Widget::startServer()
         try
         {
             SkillParser(GAMEDATAPATH+QString("Skills.json"));
-            logMessage(tr("[INFO] Loaded %1 skills").arg(Skill::skills.size()));
+            logMessage(tr("Loaded %1 skills").arg(Skill::skills.size()));
         }
         catch (const QString& e)
         {
-            logMessage(tr("[SEVERE] Error parsing Skills: ")+e);
-            logMessage(tr("[INFO] Server crashed, stopping server"));
+            cmd.logInfoMsg("Error parsing Skills: "+e);
+            cmd.logErrMsg("Server cannot continue operation, aborting!");
             win.stopServer();
         }
         catch (const char* e)
         {
-            logMessage(tr("[SEVERE] Error parsing Skills: ")+e);
-            logMessage(tr("[INFO] Server crashed, stopping server"));
+            cmd.logInfoMsg(tr("[SEVERE] Error parsing Skills: %1").arg(e));
+            cmd.logErrMsg("Server cannot continue operation, aborting!");
             win.stopServer();
         }
     }
@@ -345,10 +343,10 @@ void Widget::startServer()
     // TCP server
     if (enableLoginServer)
     {
-        logStatusMessage("[INFO] Starting TCP login server on port "+QString().setNum(loginPort)+" ...");
+        cmd.logInfoMsg(" Starting TCP login server on port "+QString().setNum(loginPort)+" ...");
         if (!tcpServer->listen(QHostAddress::Any,loginPort))
         {
-            logStatusMessage("[INFO] TCP: Unable to start server on port "+QString().setNum(loginPort)+": "+tcpServer->errorString());
+            cmd.logErrMsg("TCP: Unable to start server on port "+QString().setNum(loginPort)+": "+tcpServer->errorString());
             stopServer();
             return;
         }
@@ -361,10 +359,10 @@ void Widget::startServer()
     // UDP server
     if (enableGameServer)
     {
-        logStatusMessage("[INFO] Starting UDP game server on port "+QString().setNum(gamePort)+" ...");
+        cmd.logInfoMsg("Starting UDP game server on port "+QString().setNum(gamePort)+" ...");
         if (!udpSocket->bind(gamePort, QUdpSocket::ReuseAddressHint|QUdpSocket::ShareAddress))
         {
-            logStatusMessage("[SEVERE] UDP: Unable to start server on port "+QString().setNum(gamePort));
+            cmd.logErrMsg("UDP: Unable to start server on port "+QString().setNum(gamePort));
             stopServer();
             return;
         }
@@ -380,7 +378,7 @@ void Widget::startServer()
         sync.startSync();
 
     if (enableLoginServer || enableGameServer)
-        logStatusMessage(tr("[INFO] Server started succesfully!"));
+        cmd.logInfoMsg("Server started succesfully!");
 
     //connect(ui->sendButton, SIGNAL(clicked()), this, SLOT(sendCmdLine()));
     if (enableLoginServer)
@@ -442,7 +440,7 @@ void Widget::stopServer()
 void Widget::stopServer(bool log)
 {
     if (log)
-        logStatusMessage(tr("[INFO] Stopping all server operations"));
+        cmd.logInfoMsg("[INFO] Stopping all server operations");
     pingTimer->stop();
     tcpServer->close();
     for (int i=0;i<tcpClientsList.size();i++)
